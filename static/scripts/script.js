@@ -17,11 +17,12 @@ $(function() { //shorthand document.ready function
         	success: function() {
     	      	//display message back to user here
     	      	document.getElementById('imageid').src = "static/images/original/image.png?" + new Date().getTime();
-        	},
+        	    document.getElementById('undo').disabled = true;
+            },
         	error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
                 //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
-                alert("Informações da requisição: \n" + request.getAllResponseHeaders());
+                //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
             }
         });
         return false;
@@ -42,11 +43,12 @@ $(function() { //shorthand document.ready function
             success: function() {
                 //display message back to user here
                 document.getElementById('imageid').src = "static/images/original/image.png?" + new Date().getTime();
+                $("#undo").removeAttr('disabled');
             },
             error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
                 //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
-                alert("Informações da requisição: \n" + request.getAllResponseHeaders());
+                //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
             }
         });
     });

@@ -35,13 +35,19 @@ Released   : 20130902
 					<li class="current_page_item">
 						Negativo 
 						<br />
-						<!-- <button id="non-negative" disabled>Undo</button> -->
 						<button class="filter" id="negative">Do</button>
 					</li>
-					<li><a href="#" accesskey="2" title="">Our Clients</a></li>
-					<li><a href="#" accesskey="3" title="">About Us</a></li>
-					<li><a href="#" accesskey="4" title="">Careers</a></li>
-					<li><a href="#" accesskey="5" title="">Contact Us</a></li>
+					<li>
+						Contraste Log
+						<br />
+						<button class="filter" id="log">Do</button>
+					</li>
+					<li>
+						Contraste Power
+						<br />
+						<button class="filter" id="power">Do</button>
+					</li>
+					<li><a href="#" accesskey="3" title="">NOVO FILTRO</a></li>
 				</ul>
 			</div>
 		</div>
@@ -59,14 +65,16 @@ Released   : 20130902
 			    </form>
 
 			
-		    <div id="img_container">
-		    	<img src="" id="imageid" alt="image">
-		    </div>
+			    <div id="img_container">
+			    	<img src="" id="imageid" alt="image">
+			    </div>
+		    	
 				<ul class="actions">
-					<li><a href="#" class="button">Etiam posuere</a></li>
+					<button id="undo" disabled="disabled">Undo</button>
+					<!-- <li><a href="#" class="button">Etiam posuere</a></li> -->
 				</ul>
-			</div>
-			<div id="featured">
+				</div>
+				<div id="featured">
 				<div class="title">
 					<h2>Maecenas lectus sapien</h2>
 					<span class="byline">Integer sit amet aliquet pretium</span>

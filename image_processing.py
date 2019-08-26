@@ -2,6 +2,7 @@ import numpy as np
 from imread import imread
 from matplotlib import pyplot as mpl
 from PIL import Image 
+import imageio
 
 # Transforma a imagem em preto e branco e RGB (o formato desejado)
 def transformImage(filename):
@@ -41,3 +42,7 @@ def filterContrastPow(matrix_image):
 # Filtro de contraste que calcula de acordo com dois pontos desenhados
 def filterTwoPoints(p1, p2):
     matrix_image = matrix_image
+
+#Salvar imagem
+def saveImage(path, matrix):
+    imageio.imwrite(path, matrix) 
