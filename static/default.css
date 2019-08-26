@@ -22,6 +22,7 @@
 		font-weight: 600;
 		color: #333333;
 	}
+
 	
 	p, ol, ul
 	{
@@ -573,4 +574,28 @@
 		display: block;
 		color: #000;
 		background: red;
+	}
+
+/*Meus elementos, colocados no final para não ser sobreposto por outra instrução*/
+	#title-left{
+		color: #fff;
+		text-align: center;
+		margin-bottom: 20px; 
+	}
+
+	#menu{
+		color: #fff;
+		text-align: center;
+	}
+
+	#menu li{
+		padding-top: 20px; 
+		padding-bottom: 20px; 
+	}
+
+	#menu li button{
+		margin-top: 15px;
+		width: 32px;
+		height: 20px;
+		font-size: 12px; 
 	}
