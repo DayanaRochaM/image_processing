@@ -593,13 +593,15 @@
 		padding-bottom: 20px; 
 	}
 
-	#menu li button{
+	#menu li button.filter{
 		margin-top: 15px;
-		width: 32px;
+		width: 40px;
 		height: 20px;
 		font-size: 12px; 
 	}
 
-	#undo{
-		
+	#menu li button.non-filter{
+		width: 40px;
+		font-size: 12px;
+		padding-left: 3.5px;
 	}

@@ -16,8 +16,8 @@ $(function() { //shorthand document.ready function
             	contentType: false,
         	success: function() {
     	      	//display message back to user here
-    	      	document.getElementById('imageid').src = "static/images/original/image.png?" + new Date().getTime();
-        	    document.getElementById('undo').disabled = true;
+    	      	document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
+        	    disabled="disabled"
             },
         	error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
@@ -32,6 +32,33 @@ $(function() { //shorthand document.ready function
     // Todo filtro terá um botão com o nome do filtro por ele aplicado. 
     $(".filter").click(function() {
         var formFilter = new FormData();
+        var id = this.id;
+        formFilter.append('filter', id); 
+
+        $.ajax({
+            type: "POST",
+            url: "/apply_filter",
+            data: formFilter,
+            processData: false,
+                contentType: false,
+            success: function() {
+                //display message back to user here
+                document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
+                $('#'.concat(id)).attr('disabled', true);
+                $('#'.concat('non-',id)).attr('disabled', false);
+            },
+            error: function (request, status, erro) {
+                alert("Problema ocorrido: " + status + "\nDescição: " + erro);
+                //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
+                //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
+            }
+        });
+    });
+
+    // Para retirar filtros. O controle é feito com o id do botão.
+    $(".non-filter").click(function() {
+        var formFilter = new FormData();
+        var id = this.id;
         formFilter.append('filter', this.id); 
 
         $.ajax({
@@ -42,8 +69,9 @@ $(function() { //shorthand document.ready function
                 contentType: false,
             success: function() {
                 //display message back to user here
-                document.getElementById('imageid').src = "static/images/original/image.png?" + new Date().getTime();
-                $("#undo").removeAttr('disabled');
+                document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
+                $('#'.concat(id)).attr('disabled', true);
+                $('#'.concat(id.slice(4))).attr('disabled', false);
             },
             error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);

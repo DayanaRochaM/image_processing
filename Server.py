@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, jsonify, make_response
 from os import listdir, remove
 from os.path import isfile, join
+from itertools import chain
 import image_processing as pi
+import utils
 from werkzeug.utils import secure_filename
 import json
 #from flask_cors import CORS
@@ -17,18 +19,15 @@ Instalacoes pro image_processing:
 '''
 
 app = Flask(__name__)
-path = "static/images/original/"
+path = "static/images/"
 filters_list = ["negative", "log", "power"]
+non_filters_list = ["non-negative", "non-log", "non-power"]
+global filters_in_use 
+filters_in_use = []
 #CORS(app)  
 
 if __name__ == '__main__':    
     app.run(host='127.0.0.1', port=5000, debug=True)
-
-#Excluindo arquivos para deixar apenas o desejado
-def cleaningFolder(dire):
-	files = listdir(dire)
-	for file in files:
-		remove(path + file)
 
 @app.route('/', methods=['GET'])
 def home():
@@ -40,11 +39,14 @@ def upload_image():
 	if request.method == 'POST':
 
 		file = request.files['file']
-		cleaningFolder(path)	
+		utils.cleaningFolder(path + "actual/")	
 		f = pi.transformImage(file)
 
-		# Salvando arquivo
-		complete_path = path + secure_filename(file.content_type).replace('_','.')
+		# Salvando arquivo original
+		complete_path = path + "original/" + secure_filename(file.content_type).replace('_','.')
+		pi.saveImage(complete_path, f) 
+		# Salvando copia editada
+		complete_path = path + "actual/" + secure_filename(file.content_type).replace('_','.')
 		pi.saveImage(complete_path, f) 
 		#f.save(path + secure_filename(f.content_type).replace('_','.'))
 
@@ -56,35 +58,50 @@ def upload_image():
 def apply_filter():
 	
 	# Pegando nome do arquivo
-	files = listdir(path)
+	files = listdir(path + "actual/")
 	if request.method == 'POST' and len(files) == 1:
 
 		file = files[0]
 		print(file)
 
 		filter_ = request.form['filter']
-		if filter_ in filters_list:
 
-			print(filter_)
-			filename = file.replace('_','.')
-			complete_filename = path + filename
-			img_matrix = pi.readImage(complete_filename)
+		if filter_ in filters_list or filter_ in non_filters_list:
 
-			if filter_ == 'negative':
-				img_matrix = pi.filterNegative(img_matrix)
+			if filter_ in filters_list:
 
-			elif filter_ == 'log':
-				img_matrix = pi.filterContrastLog(img_matrix)
+				# Lendo arquivo
+				filename = file.replace('_','.')
+				complete_filename = path + "actual/" + filename
+				img_matrix = pi.readImage(complete_filename)
 
-			elif filter_ == 'power':
-				img_matrix = pi.filterContrastPow(img_matrix)
+				# Aplicando filtro
+				filters_in_use.append(filter_)
+				img_matrix = utils.applyFilter(filter_, img_matrix)
 
-			cleaningFolder(path)
+			elif filter_ in non_filters_list:
+
+				# Lendo arquivo
+				filename = file.replace('_','.')
+				complete_filename = path + "original/" + filename
+				img_matrix = pi.readImage(complete_filename)
+					
+				# Removendo um filtro
+				filters_in_use.remove(filter_[4:])
+				img_matrix = utils.removeFilter(filter_, img_matrix, filters_in_use)
+
+			# Limpando diretório
+			utils.cleaningFolder(path + "actual/")
 
 			# Salvando arquivo
-			complete_path = path + filename
+			complete_path = path + "actual/" + filename
 			pi.saveImage(complete_path, img_matrix) 
 			#f.save('static/images/original/' + secure_filename(f.content_type).replace('_','.'))
+
+			print(filters_in_use)
+		else:
+
+			return json.dumps({'success':True}), 400, {'ContentType':'application/json'}
 
 		return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
