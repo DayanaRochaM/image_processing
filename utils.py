@@ -2,13 +2,6 @@
 import image_processing as pi
 from os import listdir,remove
 
-filter_function = {
-	'negative' : pi.filterNegative,
-	'log' : pi.filterContrastLog,
-	'power' : pi.filterContrastPow
-}
-
-
 # Excluindo arquivos para deixar apenas o desejado
 def cleaningFolder(directory):
 	files = listdir(directory)
@@ -32,10 +25,7 @@ def applyFilter(filter_, img_matrix):
 # Aplicar sequencia de filtros
 def removeFilter(filter_, img_matrix, filters_in_use):
 	filter_ = filter_[4:]
-	if filter_ in filters_in_use:
-
-		for name, func in filter_function.items():
-			if name in filters_in_use:
-				img_matrix = func(img_matrix)
+	for name in filters_in_use:
+		img_matrix = applyFilter(name, img_matrix)
 
 	return img_matrix

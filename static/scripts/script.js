@@ -17,10 +17,11 @@ $(function() { //shorthand document.ready function
         	success: function() {
     	      	//display message back to user here
     	      	document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
-        	    disabled="disabled"
+        	    $('.filter').attr('disabled', false);
             },
         	error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
+                $('.filter').attr('disabled', true);
                 //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
                 //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
             }

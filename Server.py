@@ -19,7 +19,8 @@ Instalacoes pro image_processing:
 '''
 
 app = Flask(__name__)
-path = "static/images/"
+path_original = "static/images/original/"
+path_actual = "static/images/actual/"
 filters_list = ["negative", "log", "power"]
 non_filters_list = ["non-negative", "non-log", "non-power"]
 global filters_in_use 
@@ -39,14 +40,14 @@ def upload_image():
 	if request.method == 'POST':
 
 		file = request.files['file']
-		utils.cleaningFolder(path + "actual/")	
+		utils.cleaningFolder(path_actual)	
 		f = pi.transformImage(file)
 
 		# Salvando arquivo original
-		complete_path = path + "original/" + secure_filename(file.content_type).replace('_','.')
+		complete_path = path_original + secure_filename(file.content_type).replace('_','.')
 		pi.saveImage(complete_path, f) 
-		# Salvando copia editada
-		complete_path = path + "actual/" + secure_filename(file.content_type).replace('_','.')
+		# Salvando copia a ser editada
+		complete_path = path_actual + secure_filename(file.content_type).replace('_','.')
 		pi.saveImage(complete_path, f) 
 		#f.save(path + secure_filename(f.content_type).replace('_','.'))
 
@@ -58,7 +59,7 @@ def upload_image():
 def apply_filter():
 	
 	# Pegando nome do arquivo
-	files = listdir(path + "actual/")
+	files = listdir(path_actual)
 	if request.method == 'POST' and len(files) == 1:
 
 		file = files[0]
@@ -68,11 +69,11 @@ def apply_filter():
 
 		if filter_ in filters_list or filter_ in non_filters_list:
 
+			filename = file.replace('_','.')
 			if filter_ in filters_list:
 
 				# Lendo arquivo
-				filename = file.replace('_','.')
-				complete_filename = path + "actual/" + filename
+				complete_filename = path_actual + filename
 				img_matrix = pi.readImage(complete_filename)
 
 				# Aplicando filtro
@@ -82,8 +83,7 @@ def apply_filter():
 			elif filter_ in non_filters_list:
 
 				# Lendo arquivo
-				filename = file.replace('_','.')
-				complete_filename = path + "original/" + filename
+				complete_filename = path_original + filename
 				img_matrix = pi.readImage(complete_filename)
 					
 				# Removendo um filtro
@@ -91,10 +91,10 @@ def apply_filter():
 				img_matrix = utils.removeFilter(filter_, img_matrix, filters_in_use)
 
 			# Limpando diretório
-			utils.cleaningFolder(path + "actual/")
+			utils.cleaningFolder(path_actual)
 
 			# Salvando arquivo
-			complete_path = path + "actual/" + filename
+			complete_path = path_actual + filename
 			pi.saveImage(complete_path, img_matrix) 
 			#f.save('static/images/original/' + secure_filename(f.content_type).replace('_','.'))
 
