@@ -16,6 +16,7 @@ o controle sobre o do e undo.
 Instalacoes pro image_processing: 
 	conda install -c conda-forge imread
 	pip install Pillow
+	pip install opencv-python
 '''
 
 app = Flask(__name__)

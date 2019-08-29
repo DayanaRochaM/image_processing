@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 from imread import imread
 from matplotlib import pyplot as mpl
 from PIL import Image 
@@ -17,6 +18,10 @@ def readImage(filename):
 # Mostrar imagem
 def showImage(matrix_image):
     mpl.imshow(matrix_image)
+    
+#Salvar imagem
+def saveImage(path, matrix):
+    imageio.imwrite(path, matrix) 
     
 '''  FILTROS '''
 
@@ -42,7 +47,51 @@ def filterContrastPow(matrix_image):
 # Filtro de contraste que calcula de acordo com dois pontos desenhados
 def filterTwoPoints(p1, p2):
     matrix_image = matrix_image
+    
+# Filtro de constraste que gera uma imagem com pixels equalizados
+''' AQUUIIIIII '''
 
-#Salvar imagem
-def saveImage(path, matrix):
-    imageio.imwrite(path, matrix) 
+''' CALCULAR HISTOGRAMA '''
+
+# Funcao que retorna quantidade de ocorrencias por pixel e os pixels associados
+def calculateHistogram(filename):
+    img = cv2.imread(filename)
+    
+    # Calcula a média do canais RGB e concatena em um array 1D
+    vals = img.mean(axis=2).flatten()
+    
+    # Calcular histograma de 0 a 255 cores
+    counts, bins = np.histogram(vals, range(256))
+    return counts, bins
+
+# Função que exibe histograma
+def showHistogram(counts, bins):
+    
+    # Plottar histagrama centrados nos valores 0..255
+    mpl.bar(bins[:-1] - 0.5, counts, width=1, edgecolor='none')
+    mpl.xlim([-0.5, 255.5])
+    mpl.show()
+    
+''' OPERACOES COM MATRIZES '''
+
+# Função que retorna apenas uma dos três canais de uma matriz referente a uma imagem RGB cinza 
+def getOneChannelFromRGBMatrix(img_matrix):
+    matrix = []
+    for line in img_matrix:
+        columns = []
+        for values in line:
+            columns.append(values[0])
+        matrix.append(columns)
+    return matrix
+
+# Função que dada uma matriz referente a um canal de imagem, retorna uma matriz com 3 canais iguais, representando uma imagem cinza
+def createThreeChannelsFromOne(img_matrix):
+    matrix = []
+    for line in img_matrix:
+        columns = []
+        for value in line:
+            columns.append([value, value, value])
+        matrix.append(columns)
+    return matrix
+
+ 
