@@ -18,6 +18,7 @@ $(function() { //shorthand document.ready function
     	      	//display message back to user here
     	      	document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
         	    $('.filter').attr('disabled', false);
+                $('.non-filter').attr('disabled', true);
             },
         	error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);

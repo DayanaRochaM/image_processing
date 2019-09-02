@@ -22,8 +22,8 @@ Instalacoes pro image_processing:
 app = Flask(__name__)
 path_original = "static/images/original/"
 path_actual = "static/images/actual/"
-filters_list = ["negative", "log", "power"]
-non_filters_list = ["non-negative", "non-log", "non-power"]
+filters_list = ["negative", "log", "power", "histogram"]
+non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram"]
 global filters_in_use 
 filters_in_use = []
 #CORS(app)  
