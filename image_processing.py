@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 from imread import imread
 from matplotlib import pyplot as mpl
 from PIL import Image 
@@ -67,6 +68,43 @@ def filterHistogram(img_matrix):
     img_matrix = expandOneToThreeChannels(one_channel_img)
     img_matrix = np.array(img_matrix)
     return img_matrix.astype('uint8')
+
+# Filtro da convolução
+def filterConvolution(img_matrix, filter_):
+    
+    # Matriz de filtro tem que ser quadrada
+    
+    # Rotacionar matriz de filtro
+    f_reverse = rotateMatrix180(filter_)
+    
+    # Encontrar centro da matriz
+    center = findMatrixCenter(filter_)
+    
+    # Definir dicionário com operações a serem aplicadas em cada célula referente ao filtro
+    f_operations = createDictFromCoordsCentered(filter_, center)
+    
+    # Colhendo informações da imagem
+    lin = len(img_matrix)
+    col = len(img_matrix[0])
+
+    new_m = copy.deepcopy(img_matrix)
+    # Criando objeto que percorrerá os índices
+    # ix = np.ndindex(linhas,colunas)     
+
+    for i in range(lin):
+        for j in range(col):
+            sum_ = 0
+            
+            for key, value in f_operations.items():
+                try:
+                    sum_ = sum_ + img_matrix[i + value[0]][j + value[1]] * f_reverse[key[0]][key[1]]
+                except:
+                    sum_ = sum_
+                    
+                    
+            new_m[i][j] = sum_
+            
+    return new_m
     
 ''' CALCULAR HISTOGRAMA '''
 
@@ -110,6 +148,32 @@ def expandOneToThreeChannels(img_matrix):
             columns.append([value, value, value])
         matrix.append(columns)
     return matrix
+
+# Para rotacionar matriz em 180 graus (usado na convolução)
+def rotateMatrix180(filter_):
+    filter_ = np.matrix(filter_)
+    f_reverse = np.rot90(filter_, 2)
+    f_reverse = f_reverse.tolist()
+    
+    return f_reverse
+
+# Criando dicionario de coordenadas da matriz baseadas no centro da mesma
+def createDictFromCoordsCentered(filter_, center):
+    line = len(filter_)
+    col = len(filter_[0])
+    f_operations = {}
+    for i in range(line):
+        for j in range(col):
+            f_operations[(i,j)] = tuple(np.subtract((i,j),center))
+    
+    return f_operations
+
+# Encontrando centro da matriz (lembrando que sempre será quadrada de numero impar)
+def findMatrixCenter(matrix):
+    i = int(len(matrix)/2) 
+    center = (i,i)
+    
+    return center
 
 ''' PROBABILIDADES '''
 
