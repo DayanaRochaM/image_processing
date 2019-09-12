@@ -71,6 +71,8 @@ def filterHistogram(img_matrix):
 
 # Filtro da convolução
 def filterConvolution(img_matrix, filter_):
+    # Obtendo apenas um canal da imagem
+    img_matrix = getOneChannelFromRGBMatrix(img_matrix.copy())
     
     # Matriz de filtro tem que ser quadrada
     
@@ -87,9 +89,7 @@ def filterConvolution(img_matrix, filter_):
     lin = len(img_matrix)
     col = len(img_matrix[0])
 
-    new_m = copy.deepcopy(img_matrix)
-    # Criando objeto que percorrerá os índices
-    # ix = np.ndindex(linhas,colunas)     
+    new_m = copy.deepcopy(img_matrix)   
 
     for i in range(lin):
         for j in range(col):
@@ -101,11 +101,92 @@ def filterConvolution(img_matrix, filter_):
                 except:
                     sum_ = sum_
                     
-                    
-            new_m[i][j] = sum_
-            
-    return new_m
+            new_m[i][j] = int(sum_)
     
+    # Normalizando
+    new_m = np.array(new_m)
+    new_m = new_m/new_m.max()
+    new_m = 255 * new_m
+    new_m = expandOneToThreeChannels(new_m)
+            
+    return np.array(new_m).astype('uint8')
+
+# Filtro da média (embaçar)
+def filterMean(img_matrix, n):
+    
+    # Tamanho da máscara da média
+    mask = np.zeros((n,n))
+    
+    # Separando apenas um canal do RGB
+    img_matrix = getOneChannelFromRGBMatrix(img_matrix.copy())
+    
+    # Encontrando centro da máscara
+    center = findMatrixCenter(mask)
+    
+    # Definir dicionário com operações a serem aplicadas em cada célula referente ao filtro
+    m_operations = createDictFromCoordsCentered(mask, center)
+
+    # Colhendo informações da imagem
+    lin = len(img_matrix)
+    col = len(img_matrix[0])
+
+    new_m = copy.deepcopy(img_matrix)
+
+    for i in range(lin):
+        for j in range(col):
+            sum_ = 0
+
+            for key, value in m_operations.items():
+                try:
+                    sum_ = sum_ + img_matrix[i + value[0]][j + value[1]]
+                except:
+                    sum_ = sum_
+                    
+            mean = sum_/(n*n)  
+            new_m[i][j] =  int(mean)
+            
+    new_m = expandOneToThreeChannels(new_m)
+    return new_m
+
+# Filtro da mediana (tirar ruído)
+def filterMedian(img_matrix, n):
+    
+    # Tamanho da máscara da mediana
+    mask = np.zeros((n,n))
+    
+    # Separando apenas um canal do RGB
+    img_matrix = getOneChannelFromRGBMatrix(img_matrix.copy())
+    
+    # Encontrando centro da máscara
+    center = findMatrixCenter(mask)
+    
+    # Definir dicionário com operações a serem aplicadas em cada célula referente ao filtro
+    m_operations = createDictFromCoordsCentered(mask, center)
+
+    # Colhendo informações da imagem
+    lin = len(img_matrix)
+    col = len(img_matrix[0])
+
+    new_m = copy.deepcopy(img_matrix)
+
+    for i in range(lin):
+        for j in range(col):
+            
+            new_list = list()
+
+            for key, value in m_operations.items():
+                try:
+                    new_list.append(img_matrix[i + value[0]][j + value[1]])
+                except:
+                    new_list.append(0)
+
+            np_list = np.array(new_list)
+            median = np.median(np_list)  
+            new_m[i][j] =  int(median)
+            
+    new_m = expandOneToThreeChannels(new_m)
+    return new_m
+
 ''' CALCULAR HISTOGRAMA '''
 
 # Funcao que retorna quantidade de ocorrencias por pixel e os pixels associados
