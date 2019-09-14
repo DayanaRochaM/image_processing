@@ -7,6 +7,14 @@ $(function() { //shorthand document.ready function
     	form.append('file', event.target.files[0]); 
 	});
 
+    // Para pegar as alterações na caixa de texto do filtro de convolução
+    /*var form_convolution;
+    $('#conv-text').change(function (event) {
+        form_convolution = new FormData();
+        form_convolution.append('conv_text', $('#conv-text').val()); 
+        console.log(form_convolution);
+    });*/
+
 	$("#submit").click(function() {
         $.ajax({
         	type: "POST",
@@ -18,11 +26,13 @@ $(function() { //shorthand document.ready function
     	      	//display message back to user here
     	      	document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
         	    $('.filter').attr('disabled', false);
+                $('.filter-with-text').attr('disabled', false);
                 $('.non-filter').attr('disabled', true);
             },
         	error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
                 $('.filter').attr('disabled', true);
+                $('.filter-with-text').attr('disabled', true);
                 //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
                 //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
             }
@@ -36,6 +46,32 @@ $(function() { //shorthand document.ready function
         var formFilter = new FormData();
         var id = this.id;
         formFilter.append('filter', id); 
+
+        $.ajax({
+            type: "POST",
+            url: "/apply_filter",
+            data: formFilter,
+            processData: false,
+                contentType: false,
+            success: function() {
+                //display message back to user here
+                document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
+                $('#'.concat(id)).attr('disabled', true);
+                $('#'.concat('non-',id)).attr('disabled', false);
+            },
+            error: function (request, status, erro) {
+                alert("Problema ocorrido: " + status + "\nDescição: " + erro);
+                //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
+                //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
+            }
+        });
+    });
+
+    $(".filter-with-text").click(function() {
+        var formFilter = new FormData();
+        var id = this.id;
+        formFilter.append('filter', id); 
+        formFilter.append('text', $("#".concat(id,"-text")).val());
 
         $.ajax({
             type: "POST",

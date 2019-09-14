@@ -432,9 +432,7 @@
 /* Menu                                                                          */
 /*********************************************************************************/
 
-	#menu
-	{
-	}
+
 	
 	#menu ul
 	{
@@ -586,6 +584,15 @@
 	#menu{
 		color: #fff;
 		text-align: center;
+		overflow: auto;
+		height: 100%;
+		padding-top: 30px;
+		padding-bottom: 4px;
+		border-bottom: 1px solid #808080;
+		border-top: 1px solid #808080;
+	}
+	#menu ::-webkit-scrollbar-track-piece {
+	    background-color: #000000;
 	}
 
 	#menu li{

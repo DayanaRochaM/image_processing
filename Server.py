@@ -79,6 +79,10 @@ def apply_filter():
 
 				# Aplicando filtro
 				filters_in_use.append(filter_)
+				if(filter_ == "convolution"):
+					# TRATAR TEXTO AQUI, TANTO O TIPO QUANTO AS DIMENSÕES
+					print(request.form['text'])
+				
 				img_matrix = utils.applyFilter(filter_, img_matrix)
 
 			elif filter_ in non_filters_list:
