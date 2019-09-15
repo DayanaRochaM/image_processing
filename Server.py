@@ -6,6 +6,7 @@ import image_processing as pi
 import utils
 from werkzeug.utils import secure_filename
 import json
+import ast
 #from flask_cors import CORS
 '''
 REGRAS DA APLICAÇÃO:
@@ -24,6 +25,7 @@ path_original = "static/images/original/"
 path_actual = "static/images/actual/"
 filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median"]
 non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median"]
+args = {'convolution':None,'mean':None,'median':None}
 global filters_in_use 
 filters_in_use = []
 #CORS(app)  
@@ -79,11 +81,40 @@ def apply_filter():
 
 				# Aplicando filtro
 				filters_in_use.append(filter_)
-				if(filter_ == "convolution"):
-					# TRATAR TEXTO AQUI, TANTO O TIPO QUANTO AS DIMENSÕES
-					print(request.form['text'])
+
+				if(filter_ == "convolution"): 
+
+					# Checando se texto pode ser transformado em matriz 
+					text = request.form['text']
+					matrix = ast.literal_eval(text)
+
+					# Chechando dimensões da matriz
+					isSquare = utils.checkMatrixIsSquare(matrix)
+					print(isSquare)
+
+					if not isSquare:
+						return  json.dumps({'success':False, 'error':'test'}), 500
+
+					args['convolution'] = matrix
 				
-				img_matrix = utils.applyFilter(filter_, img_matrix)
+				if (filter_ == "mean" or filter_ == "median"):
+
+					# Pegando dimensão da matriz e checando se é um inteiro
+					text = request.form['text']
+					print(text)
+					isInteger = text.isdigit()
+
+					if not isInteger:
+						return  json.dumps({'success':False}), 500
+
+					dimension = int(text)
+
+					if filter_ == "mean":
+						args['mean'] = dimension
+					else:
+						args['median'] = dimension
+
+				img_matrix = utils.applyFilter(filter_, img_matrix, args)
 
 			elif filter_ in non_filters_list:
 
@@ -93,7 +124,7 @@ def apply_filter():
 					
 				# Removendo um filtro
 				filters_in_use.remove(filter_[4:])
-				img_matrix = utils.removeFilter(filter_, img_matrix, filters_in_use)
+				img_matrix = utils.removeFilter(filter_, img_matrix, filters_in_use, args)
 
 			# Limpando diretório
 			utils.cleaningFolder(path_actual)
@@ -106,12 +137,12 @@ def apply_filter():
 			print(filters_in_use)
 		else:
 
-			return json.dumps({'success':True}), 400, {'ContentType':'application/json'}
+			return json.dumps({'success':False}), 500
 
-		return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+		return json.dumps({'success':True}), 200
 
 	else:
-		return json.dumps({'success':False}), 500, {'ContentType':'application/json'} 
+		return json.dumps({'success':False, 'error':{'type':500, 'message':'Requisição incorreta!'}}),500 
 
 
 

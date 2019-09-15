@@ -9,7 +9,7 @@ def cleaningFolder(directory):
 		remove(directory + file)
 
 # Aplicar filtro
-def applyFilter(filter_, img_matrix, extra=None):
+def applyFilter(filter_, img_matrix, args):
 
 	if filter_ == 'negative':
 		img_matrix = pi.filterNegative(img_matrix)
@@ -28,22 +28,43 @@ def applyFilter(filter_, img_matrix, extra=None):
 
 	elif filter_ == 'convolution':
 		# Aqui o extra é uma matriz que é um filtro
-		img_matrix = pi.filterConvolution(img_matrix, extra)
+		img_matrix = pi.filterConvolution(img_matrix, args['convolution'])
 
 	elif filter_ == 'mean':
 		# Aqui o extra é um n, que é a dimensão da máscara da matriz
-		img_matrix = pi.filterMean(img_matrix, extra)
+		img_matrix = pi.filterMean(img_matrix, args['mean'])
 
 	elif filter_ == 'median':
 		# Aqui o extra é um n, que é a dimensão da máscara da matriz
-		img_matrix = pi.filterMedian(img_matrix, extra)
+		img_matrix = pi.filterMedian(img_matrix, args['median'])
 
 	return img_matrix
 
 # Aplicar sequencia de filtros
-def removeFilter(filter_, img_matrix, filters_in_use):
+def removeFilter(filter_, img_matrix, filters_in_use, args):
 	filter_ = filter_[4:]
 	for name in filters_in_use:
-		img_matrix = applyFilter(name, img_matrix)
+		img_matrix = applyFilter(name, img_matrix,args)
 
 	return img_matrix
+
+# Checando se matriz é quadrada
+def checkMatrixIsSquare(matrix):
+
+	lines = len(matrix)
+	min_cols = lines
+	max_cols = lines
+
+	for line in matrix:
+		qt_cols = len(line)
+
+		if qt_cols < min_cols:
+			min_cols = qt_cols
+
+		if qt_cols > max_cols:
+			max_cols = qt_cols
+
+	if lines == min_cols and lines == max_cols:
+		return True
+
+	return False

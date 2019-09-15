@@ -7,13 +7,21 @@
 	{
 		margin: 0px;
 		padding: 0px;
-		background: #202020;
+		background: #2a2a2a;
 		font-family: 'Source Sans Pro', sans-serif;
 		font-size: 12pt;
 		font-weight: 300;
 		color: #444444;
+		height:auto;
 	}
 	
+	body::-webkit-scrollbar { background:#2a2a2a;
+		 width:8px; 
+		 align-self: left;
+	 }
+
+	body::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+	body::-webkit-scrollbar-thumb { border-radius:8px; background:#4a4949;  }
 	
 	h1, h2, h3
 	{
@@ -59,6 +67,7 @@
 		overflow: hidden;
 		margin: 0em auto;
 		width: 1200px;
+		height:auto;
 	}
 	
 /*********************************************************************************/
@@ -384,7 +393,9 @@
 		position: relative;
 		float: left;
 		width: 300px;
-		padding: 3em 0em;
+		padding-top: 5px;
+    	padding-bottom: 0px;
+    	height:auto;
 	}
 
 /*********************************************************************************/
@@ -394,7 +405,7 @@
 	#logo
 	{
 		text-align: center;
-		margin-bottom: 4em;
+		margin-bottom: 20px;
 	}
 	
 	#logo h1
@@ -434,8 +445,9 @@
 
 
 	
-	#menu ul
+	#menu
 	{
+		height:395px;
 	}
 	
 	#menu li
@@ -484,6 +496,7 @@
 	#page
 	{
 		background: #2a2a2a;
+		height:auto;
 	}
 
 /*********************************************************************************/
@@ -499,6 +512,8 @@
 		background: #FFF;
 		border-top: 6px solid #2980b9;
 		text-align: center;
+		height:auto;
+		padding-bottom: 20px;
 	}
 
 	#main form{
@@ -519,8 +534,9 @@
 	#featured
 	{
 		overflow: hidden;
-		margin-bottom: 3em;
+		margin-bottom: 0px;
 		border-top: 1px solid rgba(0,0,0,0.08);
+		height:auto;
 	}
 
 /*********************************************************************************/
@@ -548,6 +564,9 @@
 		overflow: hidden;
 		padding: 5em 0em;
 		border-top: 1px solid rgba(0,0,0,0.08);
+		height:auto;
+		padding-top: 30px;
+		padding-bottom: 30px;
 	}
 	
 	#copyright span
@@ -585,15 +604,19 @@
 		color: #fff;
 		text-align: center;
 		overflow: auto;
-		height: 100%;
-		padding-top: 30px;
+		padding-top: 25px;
 		padding-bottom: 4px;
 		border-bottom: 1px solid #808080;
 		border-top: 1px solid #808080;
 	}
-	#menu ::-webkit-scrollbar-track-piece {
-	    background-color: #000000;
-	}
+
+	#menu::-webkit-scrollbar { background:#2a2a2a;
+		 width:8px; 
+		 align-self: left;
+	 }
+
+	#menu::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+	#menu::-webkit-scrollbar-thumb { border-radius:8px; background:#2980b9;  }
 
 	#menu li{
 		padding-top: 20px; 
@@ -611,4 +634,11 @@
 		width: 40px;
 		font-size: 12px;
 		padding-left: 3.5px;
+	}
+
+
+	#header
+	{
+    	padding-bottom: 0px;
+    	height:auto;
 	}
