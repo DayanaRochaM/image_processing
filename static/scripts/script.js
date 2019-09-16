@@ -28,6 +28,7 @@ $(function() { //shorthand document.ready function
         	    $('.filter').attr('disabled', false);
                 $('.filter-with-text').attr('disabled', false);
                 $('.non-filter').attr('disabled', true);
+                $('#calc-histogram').attr('disabled', false);
             },
         	error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
@@ -118,4 +119,32 @@ $(function() { //shorthand document.ready function
             }
         });
     });
+
+
+    // Para calcular e exibir histograma da imagem
+    $("#calc-histogram").click(function() {
+        // var formFilter = new FormData();
+        // var id = this.id;
+        // formFilter.append('filter', id); 
+
+        $.ajax({
+            type: "GET",
+            url: "/show_histogram",
+            //data: formFilter,
+            processData: false,
+                contentType: false,
+            success: function() {
+                //display message back to user here
+                document.getElementById('image-histogram').src = "static/images/histogram/hist-image.png?" + new Date().getTime();
+                //$('#'.concat(id)).attr('disabled', true);
+                //$('#'.concat('non-',id)).attr('disabled', false);
+            },
+            error: function (request, status, erro) {
+                alert("Problema ocorrido: " + status + "\nDescição: " + erro);
+                //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
+                //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
+            }
+        });
+    });
+
 });

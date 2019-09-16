@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, jsonify, make_response
 from os import listdir, remove
 from os.path import isfile, join
+from matplotlib import pyplot as mpl
 from itertools import chain
 import image_processing as pi
 import utils
@@ -21,8 +22,11 @@ Instalacoes pro image_processing:
 '''
 
 app = Flask(__name__)
-path_original = "static/images/original/"
-path_actual = "static/images/actual/"
+path_ = "static/images/"
+path_original = path_ + "original/"
+path_actual = path_ + "actual/"
+path_histogram_img = path_ +  "histogram/"
+file_histogram_img = "hist-image.png"
 filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median"]
 non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median"]
 args = {'convolution':None,'mean':None,'median':None}
@@ -144,7 +148,31 @@ def apply_filter():
 	else:
 		return json.dumps({'success':False, 'error':{'type':500, 'message':'Requisição incorreta!'}}),500 
 
+# Endpoint para calcular o histograma da imagem
+@app.route('/show_histogram', methods=['GET'])
+def show_histogram():
+	
+	# Pegando nome do arquivo
+	files = listdir(path_actual)
+	file_ = files[0]
 
+	# Lendo arquivo de imagem
+	complete_filename = path_actual + file_
+	img_matrix = pi.readImage(complete_filename)
+
+	# Calculando histograma
+	counts, labels = pi.calculateHistogram(img_matrix)
+
+	# Gerando histograma
+	mpl.bar(labels[:-1] - 0.5, counts, width=1, edgecolor='none')
+	mpl.xlim([-0.5, 255.5])
+
+	# Salvando
+	mpl.savefig(path_histogram_img + file_histogram_img)
+
+	mpl.clf()
+
+	return json.dumps({'success':True}), 200
 
 
 
