@@ -38,6 +38,12 @@ def applyFilter(filter_, img_matrix, args):
 		# Aqui o extra é um n, que é a dimensão da máscara da matriz
 		img_matrix = pi.filterMedian(img_matrix, args['median'])
 
+	elif filter_ == 'laplacian':
+		img_matrix = pi.filterLaplacian(img_matrix)
+
+	elif filter_ == 'gaussian':
+		img_matrix = pi.filterGaussian(img_matrix, args['gaussian']['n'], args['gaussian']['sigma'])
+
 	return img_matrix
 
 # Aplicar sequencia de filtros

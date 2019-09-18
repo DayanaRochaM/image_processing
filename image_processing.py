@@ -187,6 +187,64 @@ def filterMedian(img_matrix, n):
     new_m = expandOneToThreeChannels(new_m)
     return new_m
 
+# Filtro Laplaciano
+def filterLaplacian(img_matrix, n_dimension=None, sigma=None):
+    
+    # Definindo filtro laplaciano
+    filter_ = [[0,1,0],[1,-4,1],[0,1,0]]
+    
+    # Filtro laplaciano diagonal
+    #filter_ = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]
+    
+    # Realizando suavização Gaussiana primeiro
+    #img_matrix = filterGaussian(img_matrix, n_dimension, sigma)
+    
+    # Rotacionar matriz de filtro
+    return filterConvolution(img_matrix, filter_)
+
+# Filtro de suavização Gaussiano
+def filterGaussian(img_matrix, n_dimension, sigma):
+    
+    # Criando filtro
+    filter_ = matlab_style_gauss2D((n_dimension,n_dimension),sigma)
+    
+     # Obtendo apenas um canal da imagem
+    img_matrix = getOneChannelFromRGBMatrix(img_matrix.copy())
+    
+    # Matriz de filtro tem que ser quadrada
+    
+    # Rotacionar matriz de filtro
+    f_reverse = rotateMatrix180(filter_)
+    
+    # Encontrar centro da matriz
+    center = findMatrixCenter(filter_)
+    
+    # Definir dicionário com operações a serem aplicadas em cada célula referente ao filtro
+    f_operations = createDictFromCoordsCentered(filter_, center)
+    
+    # Colhendo informações da imagem
+    lin = len(img_matrix)
+    col = len(img_matrix[0])
+
+    new_m = copy.deepcopy(img_matrix)   
+
+    for i in range(lin):
+        for j in range(col):
+            sum_ = 0
+            
+            for key, value in f_operations.items():
+                try:
+                    sum_ = sum_ + img_matrix[i + value[0]][j + value[1]] * f_reverse[key[0]][key[1]]
+                except:
+                    sum_ = sum_
+                    
+            new_m[i][j] = int(sum_)
+    
+    # Normalizando
+    new_m = expandOneToThreeChannels(new_m)
+            
+    return np.array(new_m).astype('uint8')
+    
 ''' CALCULAR HISTOGRAMA '''
 
 # Funcao que retorna quantidade de ocorrencias por pixel e os pixels associados
@@ -208,6 +266,24 @@ def showHistogram(counts, labels):
     mpl.xlim([-0.5, 255.5])
     mpl.show()
     
+    
+''' CRIAR FILTRO DE SUAVIZAÇÃO GAUSSIANA '''
+
+def matlab_style_gauss2D(shape=(3,3),sigma=0.5):
+    """
+    2D gaussian mask - should give the same result as MATLAB's
+    fspecial('gaussian',[shape],[sigma])
+    """
+    m,n = [(ss-1.)/2. for ss in shape]
+    y,x = np.ogrid[-m:m+1,-n:n+1]
+    h = np.exp( -(x*x + y*y) / (2.*sigma*sigma) )
+    h[ h < np.finfo(h.dtype).eps*h.max() ] = 0
+    sumh = h.sum()
+    if sumh != 0:
+        h /= sumh
+    return h
+
+
 ''' OPERACOES COM MATRIZES '''
 
 # Função que retorna apenas uma dos três canais de uma matriz referente a uma imagem RGB cinza 

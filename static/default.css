@@ -447,7 +447,7 @@
 	
 	#menu
 	{
-		height:395px;
+		height:500px;
 	}
 	
 	#menu li
@@ -522,8 +522,8 @@
 	}
 
 	#img_container img{
-		margin-top: 20px; 
-		margin-bottom: 20px; 
+		margin-top: 40px; 
+		margin-bottom: 40px; 
 	}
 
 
@@ -619,8 +619,8 @@
 	#menu::-webkit-scrollbar-thumb { border-radius:8px; background:#2980b9;  }
 
 	#menu li{
-		padding-top: 20px; 
-		padding-bottom: 20px; 
+		padding-top: 30px; 
+		padding-bottom: 30px; 
 	}
 
 	#menu li button.filter{
@@ -644,7 +644,44 @@
 	}
 
 	.topic{
-		width: 100%/
-		background: #2a2a2a;
-		color: #fff;
+		width: 100%;
+	    background: #2980b9;
+	    color: #fff;
+	    opacity: 0.6;
+	}
+
+	label.label-filters
+	{
+		vertical-align: top;
+		margin-right: 10px;
+		font-size: 15px;
+		color: #a8a5a5;
+	}
+
+	.title h1{
+		color: #2980b9;
+	}
+
+	#welcome h3{
+		color: #2980b9;
+	}
+
+	#calc-histogram {
+		margin-top: 20px;
+		color: #000000;
+	}
+
+	#image-histogram {
+		margin-top: 30px;
+		margin-bottom: 40px;
+	}
+
+	.filter-form{
+		text-align: left;
+		margin-left: 65px;
+	}
+
+	textarea
+	{
+		border-radius: 5px;
 	}

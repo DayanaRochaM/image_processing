@@ -33,43 +33,45 @@ Released   : 20130902
 				<h3 id="title-left">FILTROS:</h3> 
 				<ul>
 					<li class="current_page_item">
-						Negativo 
+						<strong>Negativo</strong>
 						<br />
 						<button class="non-filter" id="non-negative" disabled="disabled">Undo</button>
 						<button class="filter" id="negative" disabled="disabled">Do</button>
 					</li>
 					<li>
-						Logarithm
+						<strong>Logarithm</strong>
 						<br />
 						<button class="non-filter" id="non-log" disabled="disabled">Undo</button>
 						<button class="filter" id="log" disabled="disabled">Do</button>
 					</li>
 					<li>
-						Power
+						<strong>Power</strong>
 						<br />
 						<button class="non-filter" id="non-power" disabled="disabled">Undo</button>
 						<button class="filter" id="power" disabled="disabled">Do</button>
 					</li>
 					<li>
-						Histogram
+						<strong>Histogram</strong>
 						<br />
 						<button class="non-filter" id="non-histogram" disabled="disabled">Undo</button>
 						<button class="filter" id="histogram" disabled="disabled">Do</button>
 					</li>
 					<li>
-						Convolução
+						<strong>Convolution</strong>
 						<br />
 						<br />
-						<textarea id="convolution-text" rows="5" cols="15">[[-1,0,1],[-2,0,2],[-1,0,1]]</textarea>
+						<label for="convolution-text" class="label-filters">Matriz: </label>
+						<textarea id="convolution-text" rows="4" cols="10">[[-1,0,1],[-2,0,2],[-1,0,1]]</textarea>
 						<br />
 						<br />
 						<button class="non-filter" id="non-convolution" disabled="disabled">Undo</button>
 						<button class="filter-with-text" id="convolution" disabled="disabled">Do</button>
 					</li>
 					<li>
-						Média
+						<strong>Mean</strong>
 						<br />
 						<br />
+						<label class="label-filters">Dimensão do filtro: </label>
 						<select id="mean-text">
 							<option value="3">3</option>
 							<option value="5">5</option>
@@ -85,9 +87,10 @@ Released   : 20130902
 						<button class="filter-with-text" id="mean" disabled="disabled">Do</button>
 					</li>
   					<li>
-						Mediana
+						<strong>Median</strong>
 						<br />
 						<br />
+						<label class="label-filters">Dimensão do filtro: </label>
 						<select id="median-text">
 							<option value="3">3</option>
 							<option value="5">5</option>
@@ -101,6 +104,37 @@ Released   : 20130902
 						<br />
 						<button class="non-filter" id="non-median" disabled="disabled">Undo</button>
 						<button class="filter-with-text" id="median" disabled="disabled">Do</button>
+					</li>
+					<li>
+						<strong>Laplacian</strong>
+						<br />
+						<button class="non-filter" id="non-laplacian" disabled="disabled">Undo</button>
+						<button class="filter" id="laplacian" disabled="disabled">Do</button>
+					</li>
+					<li>
+						<strong>Gaussian</strong>
+						<br />
+						<br>
+						<div class="filter-form">						
+							<label class="label-filters">Dimensão do filtro: </label>
+							<select id="gaussian-n">
+								<option value="3">3</option>
+								<option value="5">5</option>
+								<option value="7">7</option>
+								<option value="9">9</option>
+								<option value="11">11</option>
+								<option value="13">13</option>
+								<option value="15">15</option>
+							</select>
+							<br>
+							<br>
+							<label class="label-filters">Sigma: </label>
+							<textarea id="gaussian-sigma" rows="1" cols="5">0.5</textarea>
+						</div>
+						<br>
+						<br>
+						<button class="non-filter" id="non-gaussian" disabled="disabled">Undo</button>
+						<button class="filter-with-text" id="gaussian" disabled="disabled">Do</button>
 					</li>
 					<li><a href="#" accesskey="3" title="">NOVO FILTRO</a></li>
 				</ul>
@@ -130,11 +164,10 @@ Released   : 20130902
 					<div id="copyright">
 						<br>
 					    <br>
-					    <br>
 
 						<div id="img-info">
 							<div class="topic">
-				    			<h3>HISTOGRAMA</h3>
+				    			HISTOGRAMA
 				    		</div>
 				    	<br>
 				    	<button id="calc-histogram" disabled="disabled">Calculate</button>

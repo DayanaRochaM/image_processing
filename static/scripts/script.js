@@ -72,7 +72,14 @@ $(function() { //shorthand document.ready function
         var formFilter = new FormData();
         var id = this.id;
         formFilter.append('filter', id); 
-        formFilter.append('text', $("#".concat(id,"-text")).val());
+
+        if (id === 'gaussian'){
+            formFilter.append('n', $("#".concat(id,"-n")).val());
+            formFilter.append('sigma', $("#".concat(id,"-sigma")).val());
+        }
+        else {
+            formFilter.append('text', $("#".concat(id,"-text")).val());
+        }
 
         $.ajax({
             type: "POST",
