@@ -685,3 +685,8 @@
 	{
 		border-radius: 5px;
 	}
+
+	#imageid {
+		max-width: 500px;
+		max-height: 500px;
+	}

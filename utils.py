@@ -44,6 +44,9 @@ def applyFilter(filter_, img_matrix, args):
 	elif filter_ == 'gaussian':
 		img_matrix = pi.filterGaussian(img_matrix, args['gaussian']['n'], args['gaussian']['sigma'])
 
+	elif filter_ == 'highboost':
+		img_matrix = pi.filterHighboost(img_matrix, args['highboost'])
+
 	return img_matrix
 
 # Aplicar sequencia de filtros

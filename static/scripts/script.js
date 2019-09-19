@@ -1,19 +1,27 @@
 $(function() { //shorthand document.ready function
     
+    // Variaveis usadas
+    var name_file;
+    var list;
+    var extension; // Extensão da imagem
+    var extension_aus = "jpeg";
+
+    function tryLoadImage(){
+        if (extension == "jpg"){
+            extension = "jpeg";
+        }
+        document.getElementById('imageid').src = "static/images/actual/image.".concat(extension).concat("?") + new Date().getTime();
+    }
+
     // Para pegar as alterações no arquivo a ser submetidas
 	var form;
 	$('#file').change(function (event) {
     	form = new FormData();
     	form.append('file', event.target.files[0]); 
+        name_file = event.target.files[0].name;
+        list = name_file.split(".");
+        extension = list[list.length-1];
 	});
-
-    // Para pegar as alterações na caixa de texto do filtro de convolução
-    /*var form_convolution;
-    $('#conv-text').change(function (event) {
-        form_convolution = new FormData();
-        form_convolution.append('conv_text', $('#conv-text').val()); 
-        console.log(form_convolution);
-    });*/
 
 	$("#submit").click(function() {
         $.ajax({
@@ -24,8 +32,8 @@ $(function() { //shorthand document.ready function
             	contentType: false,
         	success: function() {
     	      	//display message back to user here
-    	      	document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
-        	    $('.filter').attr('disabled', false);
+                tryLoadImage();
+                $('.filter').attr('disabled', false);
                 $('.filter-with-text').attr('disabled', false);
                 $('.non-filter').attr('disabled', true);
                 $('#calc-histogram').attr('disabled', false);
@@ -56,7 +64,7 @@ $(function() { //shorthand document.ready function
                 contentType: false,
             success: function() {
                 //display message back to user here
-                document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
+                tryLoadImage();
                 $('#'.concat(id)).attr('disabled', true);
                 $('#'.concat('non-',id)).attr('disabled', false);
             },
@@ -89,7 +97,7 @@ $(function() { //shorthand document.ready function
                 contentType: false,
             success: function() {
                 //display message back to user here
-                document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
+                tryLoadImage();
                 $('#'.concat(id)).attr('disabled', true);
                 $('#'.concat('non-',id)).attr('disabled', false);
             },
@@ -115,7 +123,7 @@ $(function() { //shorthand document.ready function
                 contentType: false,
             success: function() {
                 //display message back to user here
-                document.getElementById('imageid').src = "static/images/actual/image.png?" + new Date().getTime();
+                tryLoadImage();
                 $('#'.concat(id)).attr('disabled', true);
                 $('#'.concat(id.slice(4))).attr('disabled', false);
             },

@@ -146,7 +146,7 @@ def filterMean(img_matrix, n):
             new_m[i][j] =  int(mean)
             
     new_m = expandOneToThreeChannels(new_m)
-    return new_m
+    return np.array(new_m).astype('uint8')
 
 # Filtro da mediana (tirar ruído)
 def filterMedian(img_matrix, n):
@@ -185,7 +185,7 @@ def filterMedian(img_matrix, n):
             new_m[i][j] =  int(median)
             
     new_m = expandOneToThreeChannels(new_m)
-    return new_m
+    return np.array(new_m).astype('uint8')
 
 # Filtro Laplaciano
 def filterLaplacian(img_matrix, n_dimension=None, sigma=None):
@@ -244,6 +244,26 @@ def filterGaussian(img_matrix, n_dimension, sigma):
     new_m = expandOneToThreeChannels(new_m)
             
     return np.array(new_m).astype('uint8')
+    
+# Filter Highboost
+def filterHighboost(img_matrix, constant):
+    
+    # Aplicar filtro de blur da média
+    blur_image = filterMean(img_matrix, 3)
+    
+    # Obter um canal de cada um
+    one_channel_orig = getOneChannelFromRGBMatrix(img_matrix)
+    one_channel_blur = getOneChannelFromRGBMatrix(blur_image)
+    
+    # Criando máscara
+    mask = np.array(one_channel_orig) - np.array(one_channel_blur)
+    
+    # Calculando nova imagem
+    new_image = np.array(one_channel_orig) + constant * np.array(mask)
+    new_image = expandOneToThreeChannels(new_image)
+    
+    return np.array(new_image).astype('uint8')
+
     
 ''' CALCULAR HISTOGRAMA '''
 
