@@ -1,6 +1,8 @@
 #GARANTIR APLICACAO D FILTRO SÓ DEPOIS Q O UPLOAD DA FOTO FOR FEITOR
 import image_processing as pi
 from os import listdir,remove
+import ast
+import json
 
 # Excluindo arquivos para deixar apenas o desejado
 def cleaningFolder(directory):
@@ -39,13 +41,19 @@ def applyFilter(filter_, img_matrix, args):
 		img_matrix = pi.filterMedian(img_matrix, args['median'])
 
 	elif filter_ == 'laplacian':
-		img_matrix = pi.filterLaplacian(img_matrix)
+		img_matrix = pi.filterLaplacian(img_matrix, args['laplacian']['n'], args['laplacian']['sigma'])
 
 	elif filter_ == 'gaussian':
 		img_matrix = pi.filterGaussian(img_matrix, args['gaussian']['n'], args['gaussian']['sigma'])
 
 	elif filter_ == 'highboost':
 		img_matrix = pi.filterHighboost(img_matrix, args['highboost'])
+
+	elif filter_ == 'sobel':
+		img_matrix = pi.filterSobel(img_matrix)
+
+	elif filter_ == 'two_points':
+		img_matrix = pi.filterHighboost(img_matrix, args['two_points']['p1'], args['two_points']['p2'])
 
 	return img_matrix
 
@@ -77,3 +85,102 @@ def checkMatrixIsSquare(matrix):
 		return True
 
 	return False
+
+# Tratamento para salvar argumentos
+def saveArgs(filter_, request, args):
+
+	if(filter_ == "convolution"): 
+
+		# Checando se texto pode ser transformado em matriz 
+		text = request['text']
+		matrix = ast.literal_eval(text)
+
+		# Chechando dimensões da matriz
+		isSquare = checkMatrixIsSquare(matrix)
+		print(isSquare)
+
+		if not isSquare:
+			return  json.dumps({'success':False, 'error':'test'}), 500
+
+		args['convolution'] = matrix
+
+	elif (filter_ == "mean" or filter_ == "median"):
+
+		# Pegando dimensão da matriz e checando se é um inteiro
+		text = request['text']
+		print(text)
+		isInteger = text.isdigit()
+
+		if not isInteger:
+			return  json.dumps({'success':False}), 500
+
+		dimension = int(text)
+
+		if filter_ == "mean":
+			args['mean'] = dimension
+		else:
+			args['median'] = dimension
+
+	elif (filter_ == "gaussian"):
+		# Pegando dimensão da matriz e checando se é um inteiro
+		n = request['n']
+		print("n: " + n)
+
+		sigma = request['sigma']
+		print("sigma: " + sigma)
+
+		try:
+			sigma = float(sigma)
+		except:
+			return  json.dumps({'success':False}), 500
+
+		args['gaussian'] = {'n': int(n), 'sigma': sigma}
+
+	elif (filter_ == "laplacian"):
+
+		# Pegando dimensão da matriz e checando se é um inteiro
+		n = request['n']
+		print("n: " + n)
+
+		sigma = request['sigma']
+		print("sigma: " + sigma)
+
+		try:
+			sigma = float(sigma)
+		except:
+			return  json.dumps({'success':False}), 500
+
+		args['laplacian'] = {'n': int(n), 'sigma': sigma}
+
+	elif (filter_ == "highboost"):
+
+		constant = request['text']
+		print('constant: ' + constant)
+
+		try:
+			constant = float(constant)
+			if (constant < 0 or constant > 1):
+				return  json.dumps({'success':False}), 500
+		except:
+			return  json.dumps({'success':False}), 500
+
+		args['highboost'] = constant
+
+	elif (filter_ == "two_points"):
+
+		point1 = request['point1']
+		point2 = request['point2']
+
+		print('point1: ' + point1)
+		print('point2: ' + point2)
+
+		try:
+			point1 = tuple(point1)
+			point2 = tuple(point2)
+
+		except:
+			return  json.dumps({'success':False}), 500
+
+		args['two_points'] = {'point1':point1, 'point2':point2}
+
+	return args

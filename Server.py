@@ -7,7 +7,7 @@ import image_processing as pi
 import utils
 from werkzeug.utils import secure_filename
 import json
-import ast
+import copy
 #from flask_cors import CORS
 '''
 REGRAS DA APLICAÇÃO:
@@ -27,9 +27,12 @@ path_original = path_ + "original/"
 path_actual = path_ + "actual/"
 path_histogram_img = path_ +  "histogram/"
 file_histogram_img = "hist-image.png"
-filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost"]
-non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost"]
-args = {'convolution':None,'mean':None,'median':None}
+filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost"]
+filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points"]
+non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points"]
+global args 
+#args = {'convolution':None,'mean':None,'median':None,'gaussian':None,'highboost':None, 'two_points':None}
+args = {}
 global filters_in_use 
 filters_in_use = []
 #CORS(app)  
@@ -72,6 +75,9 @@ def apply_filter():
 		file = files[0]
 		print(file)
 
+		# Indicar que estamos usando a variavel global
+		global args
+
 		filter_ = request.form['filter']
 
 		if filter_ in filters_list or filter_ in non_filters_list:
@@ -83,72 +89,17 @@ def apply_filter():
 				complete_filename = path_actual + filename
 				img_matrix = pi.readImage(complete_filename)
 
+				# Tratamento para filtros com argumentos
+				if(filter_ in filters_with_args):
+					request_form = copy.deepcopy(request.form)
+					new_args = utils.saveArgs(filter_,  request_form, args)
+					args = new_args.copy()
+				
+				img_matrix = utils.applyFilter(filter_, img_matrix, args)
+				print(filter_)
 				# Aplicando filtro
 				filters_in_use.append(filter_)
-
-				if(filter_ == "convolution"): 
-
-					# Checando se texto pode ser transformado em matriz 
-					text = request.form['text']
-					matrix = ast.literal_eval(text)
-
-					# Chechando dimensões da matriz
-					isSquare = utils.checkMatrixIsSquare(matrix)
-					print(isSquare)
-
-					if not isSquare:
-						return  json.dumps({'success':False, 'error':'test'}), 500
-
-					args['convolution'] = matrix
 				
-				elif (filter_ == "mean" or filter_ == "median"):
-
-					# Pegando dimensão da matriz e checando se é um inteiro
-					text = request.form['text']
-					print(text)
-					isInteger = text.isdigit()
-
-					if not isInteger:
-						return  json.dumps({'success':False}), 500
-
-					dimension = int(text)
-
-					if filter_ == "mean":
-						args['mean'] = dimension
-					else:
-						args['median'] = dimension
-
-				elif (filter_ == "gaussian"):
-					# Pegando dimensão da matriz e checando se é um inteiro
-					n = request.form['n']
-					print("n: " + n)
-
-					sigma = request.form['sigma']
-					print("sigma: " + sigma)
-
-					try:
-						sigma = float(sigma)
-					except:
-						return  json.dumps({'success':False}), 500
-
-					args['gaussian'] = {'n': int(n), 'sigma': sigma}
-
-				elif (filter_ == "highboost"):
-
-					constant = request.form['text']
-					print('constant: ' + constant)
-
-					try:
-						constant = float(constant)
-						if (constant < 0 or constant > 1):
-							return  json.dumps({'success':False}), 500
-					except:
-						return  json.dumps({'success':False}), 500
-
-					args['highboost'] = constant
-
-				img_matrix = utils.applyFilter(filter_, img_matrix, args)
-
 			elif filter_ in non_filters_list:
 
 				# Lendo arquivo

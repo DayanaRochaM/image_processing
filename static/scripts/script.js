@@ -10,6 +10,9 @@ $(function() { //shorthand document.ready function
         if (extension == "jpg"){
             extension = "jpeg";
         }
+        if (extension == "tif"){
+            extension = "tiff";
+        }
         document.getElementById('imageid').src = "static/images/actual/image.".concat(extension).concat("?") + new Date().getTime();
     }
 
@@ -81,7 +84,7 @@ $(function() { //shorthand document.ready function
         var id = this.id;
         formFilter.append('filter', id); 
 
-        if (id === 'gaussian'){
+        if (id === 'gaussian' || id === 'laplacian'){
             formFilter.append('n', $("#".concat(id,"-n")).val());
             formFilter.append('sigma', $("#".concat(id,"-sigma")).val());
         }
