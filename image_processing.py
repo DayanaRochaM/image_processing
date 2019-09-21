@@ -146,7 +146,7 @@ def filterMean(img_matrix, n):
             new_m[i][j] =  int(mean)
             
     new_m = expandOneToThreeChannels(new_m)
-    return new_m
+    return np.array(new_m).astype('uint8')
 
 # Filtro da mediana (tirar ruído)
 def filterMedian(img_matrix, n):
@@ -185,7 +185,7 @@ def filterMedian(img_matrix, n):
             new_m[i][j] =  int(median)
             
     new_m = expandOneToThreeChannels(new_m)
-    return new_m
+    return np.array(new_m).astype('uint8')
 
 # Filtro Laplaciano
 def filterLaplacian(img_matrix, n_dimension=None, sigma=None):
@@ -197,10 +197,14 @@ def filterLaplacian(img_matrix, n_dimension=None, sigma=None):
     #filter_ = [[-1,-1,-1],[-1,8,-1],[-1,-1,-1]]
     
     # Realizando suavização Gaussiana primeiro
-    #img_matrix = filterGaussian(img_matrix, n_dimension, sigma)
+    img_matrix = filterGaussian(img_matrix, n_dimension, sigma)
     
+    # Mask
+    mask = filterConvolution(img_matrix, filter_)
+    
+    new_image = np.array(img_matrix) + np.array(mask)
     # Rotacionar matriz de filtro
-    return filterConvolution(img_matrix, filter_)
+    return new_image.astype('uint8')
 
 # Filtro de suavização Gaussiano
 def filterGaussian(img_matrix, n_dimension, sigma):
@@ -245,6 +249,115 @@ def filterGaussian(img_matrix, n_dimension, sigma):
             
     return np.array(new_m).astype('uint8')
     
+# Filter Highboost
+def filterHighboost(img_matrix, constant):
+    
+    # Aplicar filtro de blur da média
+    blur_image = filterMean(img_matrix, 3)
+    
+    # Obter um canal de cada um
+    one_channel_orig = getOneChannelFromRGBMatrix(img_matrix)
+    one_channel_blur = getOneChannelFromRGBMatrix(blur_image)
+    
+    # Criando máscara
+    mask = np.array(one_channel_orig) - np.array(one_channel_blur)
+    
+    # Calculando nova imagem
+    new_image = np.array(one_channel_orig) + constant * np.array(mask)
+    new_image = expandOneToThreeChannels(new_image)
+    
+    return np.array(new_image).astype('uint8')
+
+# Filter convolução
+def filterSobel(img_matrix):
+    
+    # Máscaras
+    g1 = [[-1,-2,-1],[0,0,0],[1,2,1]]
+
+    g2 = [[-1,0,1],[-2,0,2],[-1,0,1]]
+    
+    # Obtendo apenas um canal da imagem
+    img_matrix = getOneChannelFromRGBMatrix(img_matrix.copy())
+    
+    # Encontrar centro da matriz
+    center_g1 = findMatrixCenter(g1)
+    center_g2 = findMatrixCenter(g2)
+    
+    # Definir dicionário com operações a serem aplicadas em cada célula referente ao filtro
+    f1_operations = createDictFromCoordsCentered(g1, center_g1)
+    f2_operations = createDictFromCoordsCentered(g2, center_g2)
+    
+    # Colhendo informações da imagem
+    lin = len(img_matrix)
+    col = len(img_matrix[0])
+
+    new_m1 = copy.deepcopy(img_matrix)   
+    
+    # Máscara 1
+    for i in range(lin):
+        for j in range(col):
+            sum_ = 0
+            
+            for key, value in f1_operations.items():
+                try:
+                    sum_ = sum_ + img_matrix[i + value[0]][j + value[1]] * g1[key[0]][key[1]]
+                except:
+                    sum_ = sum_
+                    
+            new_m1[i][j] = abs(int(sum_))
+            
+    # Máscara 2    
+    new_m2 = copy.deepcopy(img_matrix)   
+
+    for i in range(lin):
+        for j in range(col):
+            sum_ = 0
+            
+            for key, value in f2_operations.items():
+                try:
+                    sum_ = sum_ + img_matrix[i + value[0]][j + value[1]] * g2[key[0]][key[1]]
+                except:
+                    sum_ = sum_
+                    
+            new_m2[i][j] = abs(int(sum_))
+    
+    new_m = np.array(new_m1) + np.array(new_m2)
+    
+    # Normalizando
+    new_m = new_m/new_m.max()
+    new_m = 255 * new_m
+    new_m = expandOneToThreeChannels(new_m)
+            
+    return np.array(new_m).astype('uint8')
+
+# Implementar desenho de grafico
+# Formato dos pontos: (x,y)
+def filterTwoPointsChart(img_matrix, point1, point2):
+    functions = {}
+    
+    one_channel = getOneChannelFromRGBMatrix(img_matrix)
+    
+    # Calculate functions
+    functions['function1'], functions['function2'], functions['function3'] = findFunctions(point1, point2)
+    
+    # Copia da matriz
+    new_m = one_channel.copy()
+    
+    rows = len(one_channel)
+    cols = len(one_channel[0])
+    
+    # Percorrendo matriz
+    for i in range(rows):
+        
+        for j in range(cols):
+            
+            name_func = decideFunction(point1[0], point2[0], one_channel[i][j])
+            new_m[i][j] = functions[name_func](one_channel[i][j])
+    
+    new_image = expandOneToThreeChannels(new_m)
+    
+    return np.array(new_image).astype('uint8')
+
 ''' CALCULAR HISTOGRAMA '''
 
 # Funcao que retorna quantidade de ocorrencias por pixel e os pixels associados
@@ -269,7 +382,7 @@ def showHistogram(counts, labels):
     
 ''' CRIAR FILTRO DE SUAVIZAÇÃO GAUSSIANA '''
 
-def matlab_style_gauss2D(shape=(3,3),sigma=0.5):
+def matlab_style_gauss2D(shape=(3,3),sigma=1.4):
     """
     2D gaussian mask - should give the same result as MATLAB's
     fspecial('gaussian',[shape],[sigma])
@@ -349,4 +462,41 @@ def calculateAcuProbability(probs):
     probs_acum = []
     for i in range(len(probs)):
         probs_acum.append(sum(probs[0:i+1]))
-    return probs_acum       
+    return probs_acum     
+
+''' FUNÇÕES AUXILIARES PARA O FILTRO DE DOIS PONTOS '''
+
+def findFunction(coords1, coords2):
+    try :
+        const = (coords2[1] - coords1[1])/ (coords2[0] - coords1[0])
+
+        # Criando função que será retornada
+        def function(n):
+            mult_da_const = n - coords1[0]
+            return int(coords1[1] + const * mult_da_const)
+    except:
+        def function(n):
+            return n
+    
+    return function
+
+
+def findFunctions(point1, point2):
+    function1 = findFunction((0, 0), point1)
+    function2 = findFunction(point1, point2)
+    function3 = findFunction(point2, (255, 255))
+    
+    return function1, function2, function3
+
+
+def decideFunction(x1, x2, n):
+    if n <= x1:
+        return "function1"
+    
+    if x1 <= n <= x2:
+        return "function2"
+    
+    if x2 <= n :
+        return "function3"  
+    
+    
