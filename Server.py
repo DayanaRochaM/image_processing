@@ -27,8 +27,8 @@ path_original = path_ + "original/"
 path_actual = path_ + "actual/"
 path_histogram_img = path_ +  "histogram/"
 file_histogram_img = "hist-image.png"
-filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian"]
-non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian"]
+filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost"]
+non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost"]
 args = {'convolution':None,'mean':None,'median':None}
 global filters_in_use 
 filters_in_use = []
@@ -101,7 +101,7 @@ def apply_filter():
 
 					args['convolution'] = matrix
 				
-				if (filter_ == "mean" or filter_ == "median"):
+				elif (filter_ == "mean" or filter_ == "median"):
 
 					# Pegando dimensão da matriz e checando se é um inteiro
 					text = request.form['text']
@@ -118,7 +118,7 @@ def apply_filter():
 					else:
 						args['median'] = dimension
 
-				if (filter_ == "gaussian"):
+				elif (filter_ == "gaussian"):
 					# Pegando dimensão da matriz e checando se é um inteiro
 					n = request.form['n']
 					print("n: " + n)
@@ -132,6 +132,20 @@ def apply_filter():
 						return  json.dumps({'success':False}), 500
 
 					args['gaussian'] = {'n': int(n), 'sigma': sigma}
+
+				elif (filter_ == "highboost"):
+
+					constant = request.form['text']
+					print('constant: ' + constant)
+
+					try:
+						constant = float(constant)
+						if (constant < 0 or constant > 1):
+							return  json.dumps({'success':False}), 500
+					except:
+						return  json.dumps({'success':False}), 500
+
+					args['highboost'] = constant
 
 				img_matrix = utils.applyFilter(filter_, img_matrix, args)
 
