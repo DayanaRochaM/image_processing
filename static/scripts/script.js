@@ -11,7 +11,7 @@ $(function() { //shorthand document.ready function
             extension = "jpeg";
         }
         if (extension == "tif"){
-            extension = "tiff";
+            extension = "png";
         }
         document.getElementById('imageid').src = "static/images/actual/image.".concat(extension).concat("?") + new Date().getTime();
     }

@@ -50,14 +50,22 @@ def upload_image():
 	if request.method == 'POST':
 
 		file = request.files['file']
+		utils.cleaningFolder(path_original)
 		utils.cleaningFolder(path_actual)	
 		f = pi.transformImage(file)
+		name = secure_filename(file.content_type)
+
+		if("_tiff" in name):
+			print(name)
+			name = name.replace("_tiff","_png")
+			print(name)
+
 
 		# Salvando arquivo original
-		complete_path = path_original + secure_filename(file.content_type).replace('_','.')
+		complete_path = path_original + name.replace('_','.')
 		pi.saveImage(complete_path, f) 
 		# Salvando copia a ser editada
-		complete_path = path_actual + secure_filename(file.content_type).replace('_','.')
+		complete_path = path_actual + name.replace('_','.')
 		pi.saveImage(complete_path, f) 
 		#f.save(path + secure_filename(f.content_type).replace('_','.'))
 
