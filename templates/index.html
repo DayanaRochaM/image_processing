@@ -174,6 +174,30 @@ Released   : 20130902
 						<button class="non-filter" id="non-sobel" disabled="disabled">Undo</button>
 						<button class="filter" id="sobel" disabled="disabled">Do</button>
 					</li>
+					<li>
+						<strong>Two points</strong>
+						<br>
+						<br />
+						<label class="label-filters" id="label-x">X</label>
+						<label class="label-filters" id="label-y">Y</label>
+						<br>
+						<label class="label-filters">Point 1: </label>
+						<textarea class="two_points_text" id="two_points-p1x" type="number" cols="5" rows="1">0</textarea>
+						<textarea class="two_points_text" id="two_points-p1y" type="number" cols="5" rows="1">0</textarea>
+						<br>
+						<label class="label-filters">Point 2: </label>
+						<textarea class="two_points_text" id="two_points-p2x" type="number" cols="5" rows="1">0</textarea>
+						<textarea class="two_points_text" id="two_points-p2y" type="number" cols="5" rows="1">0</textarea>
+						<br>
+						<br>
+						<div id="divGraph">
+							<canvas id="myGraph" width="150" height="150"></canvas>
+						</div>
+						<br>
+						<br>
+						<button class="non-filter" id="non-two_points" disabled="disabled">Undo</button>
+						<button class="filter" id="two_points" disabled="disabled">Do</button>
+					</li>
 					<li><a href="#" accesskey="3" title="">NOVO FILTRO</a></li>
 				</ul>
 			</div>

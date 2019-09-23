@@ -1,10 +1,13 @@
 $(function() { //shorthand document.ready function
     
     // Variaveis usadas
-    var name_file;
-    var list;
-    var extension; // Extensão da imagem
-    var extension_aus = "jpeg";
+    var name_file, list, extension, form, p1x, p1y, p2x, p2y;
+    var extension_aus = "jpeg", graph_width, graph_height;
+    // Suporte para filtro de dois pontos
+    var graph = document.getElementById("myGraph");
+    var graph_point0 = graph.getContext("2d");
+    var graph_point1 = graph.getContext("2d");
+    var graph_point2 = graph.getContext("2d");
 
     function tryLoadImage(){
         if (extension == "jpg"){
@@ -16,6 +19,36 @@ $(function() { //shorthand document.ready function
         document.getElementById('imageid').src = "static/images/actual/image.".concat(extension).concat("?") + new Date().getTime();
     }
 
+    function replotGraph(){
+        $('#divGraph').removeChild(graph);
+        $('#divGraph').append('<canvas id="myGraph" width="150" height="150"></canvas>');
+        graph = document.getElementById("myGraph");
+        graph_point0 = graph.getContext("2d");
+        graph_point1 = graph.getContext("2d");
+        graph_point2 = graph.getContext("2d");
+        initializateGraph();
+    }
+
+    function initializateGraph(){
+
+        graph_point0.moveTo(0, graph_height);
+        graph_point0.lineTo(p1x, p1y);
+        graph_point0.stroke();
+
+        graph_point1.moveTo(p1x, p1y);
+        graph_point1.lineTo(p2x, p2y);
+        graph_point1.stroke();
+
+        graph_point2.moveTo(p2x, p2y);
+        graph_point2.lineTo(graph_width, 0);
+        graph_point2.stroke();
+    }
+
+    function getCorrespondent(value, scale){
+        var result = value*255/scale;
+        return result;
+    }
+
     // Para pegar as alterações no arquivo a ser submetidas
 	var form;
 	$('#file').change(function (event) {
@@ -25,6 +58,44 @@ $(function() { //shorthand document.ready function
         list = name_file.split(".");
         extension = list[list.length-1];
 	});
+
+    // Pegar alterações de dois pontos
+    $('#two_points-p1x').change(function (event) {
+        replotGraph();
+        var p1x = $(this).val();
+        p1x = getCorrespondent(p1x, graph_width);
+        graph_point0.lineTo(p1x, p1y);
+        graph_point1.moveTo(p1x, p1y);
+        graph_point0.stroke();
+        graph_point1.stroke();
+    });
+    $('#two_points-p1y').change(function (event) {
+        replotGraph();
+        var p1y = $(this).val();
+        p1y = getCorrespondent(p1y, graph_height);
+        graph_point0.lineTo(p1x, p1y);
+        graph_point1.moveTo(p1x, p1y);
+        graph_point0.stroke();
+        graph_point1.stroke();
+    });
+    $('#two_points-p2x').change(function (event) {
+        replotGraph();
+        var p2x = $(this).val();
+        p2x = getCorrespondent(p2x, graph_width);
+        graph_point1.lineTo(p2x, p2y);
+        graph_point2.moveTo(p2x, p2y);
+        graph_point1.stroke();
+        graph_point2.stroke();
+    });
+    $('#two_points-p2y').change(function (event) {
+        replotGraph();
+        var p2y = $(this).val();
+        p2y = getCorrespondent(p2y, graph_height);
+        graph_point1.lineTo(p2x, p2y);
+        graph_point2.moveTo(p2x, p2y);
+        graph_point1.stroke();
+        graph_point2.stroke();
+    });
 
 	$("#submit").click(function() {
         $.ajax({
@@ -40,6 +111,15 @@ $(function() { //shorthand document.ready function
                 $('.filter-with-text').attr('disabled', false);
                 $('.non-filter').attr('disabled', true);
                 $('#calc-histogram').attr('disabled', false);
+
+                // Configurando gráfico
+                graph_width = graph.width; 
+                graph_height = graph.height;
+                p1x = 50;
+                p1y = graph_height-50;
+                p2x = 70;
+                p2y = graph_height-70;
+                initializateGraph(graph_width, graph_height);
             },
         	error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
