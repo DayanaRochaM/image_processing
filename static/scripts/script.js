@@ -5,9 +5,7 @@ $(function() { //shorthand document.ready function
     var extension_aus = "jpeg", graph_width, graph_height;
     // Suporte para filtro de dois pontos
     var graph = document.getElementById("myGraph");
-    var graph_point0 = graph.getContext("2d");
-    var graph_point1 = graph.getContext("2d");
-    var graph_point2 = graph.getContext("2d");
+    var graph_point0, graph_point1 , graph_point2;
 
     function tryLoadImage(){
         if (extension == "jpg"){
@@ -20,16 +18,17 @@ $(function() { //shorthand document.ready function
     }
 
     function replotGraph(){
-        $('#divGraph').removeChild(graph);
-        $('#divGraph').append('<canvas id="myGraph" width="150" height="150"></canvas>');
+        graph.remove();
+        $("#divGraph").append('<canvas id="myGraph" width="150" height="150"></canvas>');
         graph = document.getElementById("myGraph");
-        graph_point0 = graph.getContext("2d");
-        graph_point1 = graph.getContext("2d");
-        graph_point2 = graph.getContext("2d");
         initializateGraph();
     }
 
     function initializateGraph(){
+
+        graph_point0 = graph.getContext("2d");
+        graph_point1 = graph.getContext("2d");
+        graph_point2 = graph.getContext("2d");
 
         graph_point0.moveTo(0, graph_height);
         graph_point0.lineTo(p1x, p1y);
@@ -45,7 +44,8 @@ $(function() { //shorthand document.ready function
     }
 
     function getCorrespondent(value, scale){
-        var result = value*255/scale;
+        var result = value*scale/255;
+        console.log(result);
         return result;
     }
 
@@ -61,40 +61,26 @@ $(function() { //shorthand document.ready function
 
     // Pegar alterações de dois pontos
     $('#two_points-p1x').change(function (event) {
-        replotGraph();
-        var p1x = $(this).val();
+        p1x = $(this).val();
         p1x = getCorrespondent(p1x, graph_width);
-        graph_point0.lineTo(p1x, p1y);
-        graph_point1.moveTo(p1x, p1y);
-        graph_point0.stroke();
-        graph_point1.stroke();
+        replotGraph(); 
     });
     $('#two_points-p1y').change(function (event) {
-        replotGraph();
-        var p1y = $(this).val();
+        p1y = $(this).val();
         p1y = getCorrespondent(p1y, graph_height);
-        graph_point0.lineTo(p1x, p1y);
-        graph_point1.moveTo(p1x, p1y);
-        graph_point0.stroke();
-        graph_point1.stroke();
+        p1y = graph_height - p1y;
+        replotGraph();
     });
     $('#two_points-p2x').change(function (event) {
-        replotGraph();
-        var p2x = $(this).val();
+        p2x = $(this).val();
         p2x = getCorrespondent(p2x, graph_width);
-        graph_point1.lineTo(p2x, p2y);
-        graph_point2.moveTo(p2x, p2y);
-        graph_point1.stroke();
-        graph_point2.stroke();
+        replotGraph();
     });
     $('#two_points-p2y').change(function (event) {
-        replotGraph();
-        var p2y = $(this).val();
+        p2y = $(this).val();
         p2y = getCorrespondent(p2y, graph_height);
-        graph_point1.lineTo(p2x, p2y);
-        graph_point2.moveTo(p2x, p2y);
-        graph_point1.stroke();
-        graph_point2.stroke();
+        p2y = graph_height - p2y;
+        replotGraph();
     });
 
 	$("#submit").click(function() {
@@ -115,11 +101,11 @@ $(function() { //shorthand document.ready function
                 // Configurando gráfico
                 graph_width = graph.width; 
                 graph_height = graph.height;
-                p1x = 50;
-                p1y = graph_height-50;
-                p2x = 70;
-                p2y = graph_height-70;
-                initializateGraph(graph_width, graph_height);
+                p1x = 0;
+                p1y = 0;
+                p2x = 0;
+                p2y = 0;
+                initializateGraph();
             },
         	error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
