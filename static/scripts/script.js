@@ -100,10 +100,13 @@ $(function() { //shorthand document.ready function
                 // Configurando gráfico
                 graph_width = graph.width; 
                 graph_height = graph.height;
-                p1x = 0;
-                p1y = 0;
-                p2x = 0;
-                p2y = 0;
+                var aux_width = getCorrespondent(0, graph_width);
+                var aux_height = getCorrespondent(0, graph_height);
+                aux_height =  graph_height - aux_height;
+                p1x = aux_width;
+                p1y = aux_height;
+                p2x = aux_width;
+                p2y = aux_height;
                 initializateGraph();
             },
         	error: function (request, status, erro) {

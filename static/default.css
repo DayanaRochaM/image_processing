@@ -710,3 +710,15 @@
 		border:1px solid #d3d3d3;
 		background-color: #fff;
 	}
+
+	#top-255{
+		vertical-align: top;
+	}
+
+	#bottom-255{
+		text-align: right;
+	}
+
+	#two_points_table{
+		margin-left: 50px;
+	}

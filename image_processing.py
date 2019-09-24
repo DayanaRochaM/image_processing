@@ -350,7 +350,6 @@ def filterTwoPointsChart(img_matrix, point1, point2):
         for j in range(cols):
 
             name_func = decideFunction(point1[0], point2[0], one_channel[i][j])
-            print(name_func)
             new_m[i][j] = functions[name_func](one_channel[i][j])
     
     new_image = expandOneToThreeChannels(new_m)
