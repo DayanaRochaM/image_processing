@@ -31,6 +31,7 @@
 		color: #333333;
 	}
 
+
 	
 	p, ol, ul
 	{
@@ -508,7 +509,7 @@
 		overflow: hidden;
 		float: right;
 		width: 800px;
-		padding: 3em 50px 5em 50px;
+		padding: 1.7em 50px 5em 50px;
 		background: #FFF;
 		border-top: 6px solid #2980b9;
 		text-align: center;
@@ -518,12 +519,24 @@
 
 	#main form{
 		margin-top: 15px;
-		margin-bottom: 15px;
+		margin-bottom: 0px;
+	}
+
+	#img_container{
+		height: 500px;
+		width: 1000px;
+		display: table-cell;
+		vertical-align: middle;
 	}
 
 	#img_container img{
 		margin-top: 40px; 
-		margin-bottom: 40px; 
+		margin-bottom: 40px;
+		border: 15px solid transparent;
+		-webkit-border-image: url(border2.png) 100 round; /* Safari 3.1-5 */
+		-o-border-image: url(border2.png) 100 round; /* Opera 11-12.1 */
+		border-image: url(border3.png) 100 round;
+		padding: 15px;
 	}
 
 
@@ -597,17 +610,21 @@
 	#title-left{
 		color: #fff;
 		text-align: center;
-		margin-bottom: 20px; 
+		margin-top: 40px; 
+		margin-bottom: 40px; 
+		font-family: "Snell Roundhand";
+		font-style: italic;
 	}
 
 	#menu{
 		color: #fff;
 		text-align: center;
 		overflow: auto;
-		padding-top: 25px;
 		padding-bottom: 4px;
 		border-bottom: 1px solid #808080;
 		border-top: 1px solid #808080;
+		font-family: "Snell Roundhand";
+		font-style: italic;
 	}
 
 	#menu::-webkit-scrollbar { background:#2a2a2a;
@@ -688,8 +705,8 @@
 	}
 
 	#imageid {
-		max-width: 400px;
-		max-height: 400px;
+		max-width: 350px;
+		max-height: 350px;
 	}
 
 	#label-x{
@@ -700,10 +717,6 @@
 	#label-y{
 		margin-left: 45px;
 		margin-right: 0px;
-	}
-
-	.two_points_text{
-		text-align: center;
 	}
 
 	#myGraph{
@@ -721,4 +734,28 @@
 
 	#two_points_table{
 		margin-left: 50px;
+	}
+
+	/* Alterações para suavizar interface*/
+	select{
+		background: #a8a5a5;
+		border-radius: 5px;
+	}
+	textarea{
+		background-color: #a8a5a5;
+	}
+	button{
+		border-radius: 5px;
+	}
+	form > input{
+		border-radius: 5px;
+	}
+
+	#submit{
+		margin-left: 20px;
+	}
+
+	.two_points_text{
+		text-align: center;
+		background-color: #fff;
 	}
