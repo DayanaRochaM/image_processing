@@ -45,7 +45,6 @@ $(function() { //shorthand document.ready function
 
     function getCorrespondent(value, scale){
         var result = value*scale/255;
-        console.log(result);
         return result;
     }
 
@@ -153,6 +152,14 @@ $(function() { //shorthand document.ready function
         if (id === 'gaussian' || id === 'laplacian'){
             formFilter.append('n', $("#".concat(id,"-n")).val());
             formFilter.append('sigma', $("#".concat(id,"-sigma")).val());
+        }
+        else if (id=='two_points'){
+            var tuple1 = [$("#".concat(id,"-p1x")).val(), $("#".concat(id,"-p1y")).val()];
+
+            var tuple2 = [$("#".concat(id,"-p2x")).val(), $("#".concat(id,"-p2y")).val()];
+
+            formFilter.append('point1', tuple1);
+            formFilter.append('point2', tuple2);
         }
         else {
             formFilter.append('text', $("#".concat(id,"-text")).val());

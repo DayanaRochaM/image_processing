@@ -43,10 +43,6 @@ def filterContrastPow(matrix_image):
     matrix_image = matrix_image/matrix_image.max()
     matrix_image = 255 * matrix_image
     return matrix_image.astype('uint8')
-   
-# Filtro de contraste que calcula de acordo com dois pontos desenhados
-def filterTwoPoints(p1, p2):
-    matrix_image = matrix_image
     
 # Filtro de constraste que gera uma imagem com pixels equalizados
 def filterHistogram(img_matrix):
@@ -334,6 +330,8 @@ def filterSobel(img_matrix):
 # Formato dos pontos: (x,y)
 def filterTwoPointsChart(img_matrix, point1, point2):
     functions = {}
+    point1 = convertTupleToIntTuple(point1)
+    point2 = convertTupleToIntTuple(point2)
     
     one_channel = getOneChannelFromRGBMatrix(img_matrix)
     
@@ -350,8 +348,9 @@ def filterTwoPointsChart(img_matrix, point1, point2):
     for i in range(rows):
         
         for j in range(cols):
-            
+
             name_func = decideFunction(point1[0], point2[0], one_channel[i][j])
+            print(name_func)
             new_m[i][j] = functions[name_func](one_channel[i][j])
     
     new_image = expandOneToThreeChannels(new_m)
@@ -467,18 +466,16 @@ def calculateAcuProbability(probs):
 ''' FUNÇÕES AUXILIARES PARA O FILTRO DE DOIS PONTOS '''
 
 def findFunction(coords1, coords2):
-    try :
-        const = (coords2[1] - coords1[1])/ (coords2[0] - coords1[0])
+	try :
+		const = (coords2[1] - coords1[1])/ (coords2[0] - coords1[0])
 
-        # Criando função que será retornada
-        def function(n):
-            mult_da_const = n - coords1[0]
-            return int(coords1[1] + const * mult_da_const)
-    except:
-        def function(n):
-            return n
-    
-    return function
+		def function(n):
+			mult_da_const = n - coords1[0]
+			return int(coords1[1] + const * mult_da_const)
+	except:
+		def function(n):
+			return n
+	return function
 
 
 def findFunctions(point1, point2):
@@ -499,4 +496,9 @@ def decideFunction(x1, x2, n):
     if x2 <= n :
         return "function3"  
     
+def convertTupleToIntTuple(tuple_):
+	lista = []
+	for i in range(len(tuple_)):
+		lista.append(int(tuple_[i]))
+	return tuple(lista)
     

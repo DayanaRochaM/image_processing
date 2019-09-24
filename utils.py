@@ -53,7 +53,9 @@ def applyFilter(filter_, img_matrix, args):
 		img_matrix = pi.filterSobel(img_matrix)
 
 	elif filter_ == 'two_points':
-		img_matrix = pi.filterHighboost(img_matrix, args['two_points']['p1'], args['two_points']['p2'])
+		print(args['two_points']['point1'])
+		print(args['two_points']['point2'])
+		img_matrix = pi.filterTwoPointsChart(img_matrix, args['two_points']['point1'], args['two_points']['point2'])
 
 	return img_matrix
 
@@ -170,13 +172,13 @@ def saveArgs(filter_, request, args):
 
 		point1 = request['point1']
 		point2 = request['point2']
-
+		
 		print('point1: ' + point1)
 		print('point2: ' + point2)
 
 		try:
-			point1 = tuple(point1)
-			point2 = tuple(point2)
+			point1 = tuple(point1.split(','))
+			point2 = tuple(point2.split(','))
 
 		except:
 			return  json.dumps({'success':False}), 500

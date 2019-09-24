@@ -27,7 +27,7 @@ path_original = path_ + "original/"
 path_actual = path_ + "actual/"
 path_histogram_img = path_ +  "histogram/"
 file_histogram_img = "hist-image.png"
-filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost"]
+filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points"]
 filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points"]
 non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points"]
 global args 
@@ -116,6 +116,7 @@ def apply_filter():
 					
 				# Removendo um filtro
 				filters_in_use.remove(filter_[4:])
+				print(filter_[4:])
 				img_matrix = utils.removeFilter(filter_, img_matrix, filters_in_use, args)
 
 			# Limpando diretório
