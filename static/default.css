@@ -29,6 +29,7 @@
 		padding: 0;
 		font-weight: 600;
 		color: #333333;
+		font-family: "Snell Roundhand";
 	}
 
 
@@ -533,8 +534,8 @@
 		margin-top: 40px; 
 		margin-bottom: 40px;
 		border: 15px solid transparent;
-		-webkit-border-image: url(border2.png) 100 round; /* Safari 3.1-5 */
-		-o-border-image: url(border2.png) 100 round; /* Opera 11-12.1 */
+		-webkit-border-image: url(border3.png) 100 round; /* Safari 3.1-5 */
+		-o-border-image: url(border3.png) 100 round; /* Opera 11-12.1 */
 		border-image: url(border3.png) 100 round;
 		padding: 15px;
 	}

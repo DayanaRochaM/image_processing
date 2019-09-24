@@ -57,6 +57,9 @@ def applyFilter(filter_, img_matrix, args):
 		print(args['two_points']['point2'])
 		img_matrix = pi.filterTwoPointsChart(img_matrix, args['two_points']['point1'], args['two_points']['point2'])
 
+	elif filter_ == 'limit':
+		img_matrix = pi.filterLimit(img_matrix, args['limit']['limit'])
+
 	return img_matrix
 
 # Aplicar sequencia de filtros
@@ -179,10 +182,33 @@ def saveArgs(filter_, request, args):
 		try:
 			point1 = tuple(point1.split(','))
 			point2 = tuple(point2.split(','))
-
+			point1 = pi.convertTupleToIntTuple(point1)
+			point2 = pi.convertTupleToIntTuple(point2)
+			# Verificando se valores estão no intervalo desejado
+			if(0 <= point1[0] <= 255 and 0 <= point2[0] <= 255 and 0 <= point1[1] <= 255 and 0 <= point2[1] <= 255):
+   				pass
+			else:
+   				return  json.dumps({'success':False}), 500
 		except:
 			return  json.dumps({'success':False}), 500
 
 		args['two_points'] = {'point1':point1, 'point2':point2}
+
+	elif (filter_ == 'limit'):
+
+		limit = request['text']
+
+		try:
+
+			limit = int(limit)
+			# Verificando se valores estão no intervalo desejado
+			if(0 <= limit <= 255):
+   				pass
+			else:
+   				return  json.dumps({'success':False}), 500
+		except:
+			return  json.dumps({'success':False}), 500
+
+		args['limit'] = {'limit':limit}
 
 	return args

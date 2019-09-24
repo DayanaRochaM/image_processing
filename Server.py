@@ -27,9 +27,9 @@ path_original = path_ + "original/"
 path_actual = path_ + "actual/"
 path_histogram_img = path_ +  "histogram/"
 file_histogram_img = "hist-image.png"
-filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points"]
-filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points"]
-non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points"]
+filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit"]
+filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit"]
+non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points","non-limit"]
 global args 
 #args = {'convolution':None,'mean':None,'median':None,'gaussian':None,'highboost':None, 'two_points':None}
 args = {}

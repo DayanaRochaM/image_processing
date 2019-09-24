@@ -330,8 +330,6 @@ def filterSobel(img_matrix):
 # Formato dos pontos: (x,y)
 def filterTwoPointsChart(img_matrix, point1, point2):
     functions = {}
-    point1 = convertTupleToIntTuple(point1)
-    point2 = convertTupleToIntTuple(point2)
     
     one_channel = getOneChannelFromRGBMatrix(img_matrix)
     
@@ -355,6 +353,30 @@ def filterTwoPointsChart(img_matrix, point1, point2):
     new_image = expandOneToThreeChannels(new_m)
     
     return np.array(new_image).astype('uint8')
+
+# Filtro de dois Limiarização (thresholging)
+def filterLimit(img_matrix, limit):
+
+	one_channel = getOneChannelFromRGBMatrix(img_matrix)
+
+	# Copia da matriz
+	new_m = one_channel.copy()
+
+	rows = len(one_channel)
+	cols = len(one_channel[0])
+    
+	# Percorrendo matriz
+	for i in range(rows):
+		for j in range(cols):
+
+			if(new_m[i][j] > limit):
+				new_m[i][j] = 255
+			else:
+				new_m[i][j] = 0
+
+	new_image = expandOneToThreeChannels(new_m)
+    
+	return np.array(new_image).astype('uint8')
 
 ''' CALCULAR HISTOGRAMA '''
 
