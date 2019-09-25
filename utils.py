@@ -1,8 +1,11 @@
 #GARANTIR APLICACAO D FILTRO SÓ DEPOIS Q O UPLOAD DA FOTO FOR FEITOR
 import image_processing as pi
 from os import listdir,remove
+from PIL import Image
 import ast
 import json
+
+global filename
 
 # Excluindo arquivos para deixar apenas o desejado
 def cleaningFolder(directory):
@@ -60,6 +63,13 @@ def applyFilter(filter_, img_matrix, args):
 	elif filter_ == 'limit':
 		img_matrix = pi.filterLimit(img_matrix, args['limit']['limit'])
 
+	elif filter_ == 'gradient':
+		img_matrix = pi.filterGradient(img_matrix)
+
+	elif filter_ == 'encode_msg':
+		img = Image.open(filename) # Abrir imagem colorida
+		img_matrix = pi.filterEncodeMsg(img, args['encode_msg']['msg'])
+
 	return img_matrix
 
 # Aplicar sequencia de filtros
@@ -92,7 +102,7 @@ def checkMatrixIsSquare(matrix):
 	return False
 
 # Tratamento para salvar argumentos
-def saveArgs(filter_, request, args):
+def saveArgs(filter_, request, args, complete_filename):
 
 	if(filter_ == "convolution"): 
 
@@ -203,12 +213,25 @@ def saveArgs(filter_, request, args):
 			limit = int(limit)
 			# Verificando se valores estão no intervalo desejado
 			if(0 <= limit <= 255):
-   				pass
+				pass
 			else:
-   				return  json.dumps({'success':False}), 500
+				return  json.dumps({'success':False}), 500
 		except:
 			return  json.dumps({'success':False}), 500
 
 		args['limit'] = {'limit':limit}
+
+	elif (filter_ == 'encode_msg'):
+
+		msg = request['text']
+
+		if(len(msg) > 255):
+			# limit length of message to 255
+ 			print("Texto muito grande! (don't exeed 255 characters)")
+ 			return json.dumps({'success':False}), 500
+
+		args['encode_msg'] = {'msg':msg}
+		global filename
+		filename = complete_filename
 
 	return args

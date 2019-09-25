@@ -94,6 +94,8 @@ $(function() { //shorthand document.ready function
                 tryLoadImage();
                 $('.filter').attr('disabled', false);
                 $('.filter-with-text').attr('disabled', false);
+                $('.encode').attr('disabled', false);
+                $('.decode').attr('disabled', false);
                 $('.non-filter').attr('disabled', true);
                 $('#calc-histogram').attr('disabled', false);
 
@@ -205,6 +207,7 @@ $(function() { //shorthand document.ready function
                 tryLoadImage();
                 $('#'.concat(id)).attr('disabled', true);
                 $('#'.concat(id.slice(4))).attr('disabled', false);
+                
             },
             error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
@@ -213,7 +216,6 @@ $(function() { //shorthand document.ready function
             }
         });
     });
-
 
     // Para calcular e exibir histograma da imagem
     $("#calc-histogram").click(function() {
@@ -232,6 +234,64 @@ $(function() { //shorthand document.ready function
                 document.getElementById('image-histogram').src = "static/images/histogram/hist-image.png?" + new Date().getTime();
                 //$('#'.concat(id)).attr('disabled', true);
                 //$('#'.concat('non-',id)).attr('disabled', false);
+            },
+            error: function (request, status, erro) {
+                alert("Problema ocorrido: " + status + "\nDescição: " + erro);
+                //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
+                //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
+            }
+        });
+    });
+
+    $(".decode").click(function() {
+        // var formFilter = new FormData();
+        // var id = this.id;
+        // formFilter.append('filter', id); 
+
+        $.ajax({
+            type: "GET",
+            url: "/decode_image_msg",
+            data: null,
+            processData: false,
+                contentType: false,
+            success: function(response) {
+                console.log(response);
+                $("#decoded_msg").val(response['mensagem'])
+                //display message back to user here
+                /*
+                tryLoadImage();
+                $('#'.concat(id)).attr('disabled', true);
+                $('#'.concat('non-',id)).attr('disabled', false);
+                */
+            },
+            error: function (request, status, erro) {
+                alert("Problema ocorrido: " + status + "\nDescição: " + erro);
+                //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
+                //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
+            }
+        });
+    });
+
+    // Para aplicar filtros. O controle é feito com o id do botão.
+    // Todo filtro terá um botão com o nome do filtro por ele aplicado. 
+    $(".encode").click(function() {
+        // var formFilter = new FormData();
+        // var id = this.id;
+        // formFilter.append('filter', id); 
+        var formFilter = new FormData();
+        var id = this.id;
+        formFilter.append('filter', id); 
+        formFilter.append('text', $("#encode_msg-text").val());
+
+        $.ajax({
+            type: "POST",
+            url: "/apply_filter",
+            data: formFilter,
+            processData: false,
+                contentType: false,
+            success: function() {
+                //display message back to user here
+                tryLoadImage();
             },
             error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
