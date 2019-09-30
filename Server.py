@@ -27,9 +27,9 @@ path_original = path_ + "original/"
 path_actual = path_ + "actual/"
 path_histogram_img = path_ +  "histogram/"
 file_histogram_img = "hist-image.png"
-filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit"]
-filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit"]
-non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points","non-limit"]
+filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit","geometric_mean","harmonic_mean","contraharmonic_mean"]
+filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit","geometric_mean","harmonic_mean","contraharmonic_mean"]
+non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points","non-limit","non-geometric_mean","non-harmonic_mean","non-contraharmonic_mean"]
 global args 
 #args = {'convolution':None,'mean':None,'median':None,'gaussian':None,'highboost':None, 'two_points':None}
 args = {}
@@ -101,6 +101,7 @@ def apply_filter():
 				if(filter_ in filters_with_args):
 					request_form = copy.deepcopy(request.form)
 					new_args = utils.saveArgs(filter_,  request_form, args)
+					print(new_args)
 					args = new_args.copy()
 				
 				img_matrix = utils.applyFilter(filter_, img_matrix, args)

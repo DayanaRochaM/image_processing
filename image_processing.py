@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import copy
 from imread import imread
 from matplotlib import pyplot as mpl
@@ -378,6 +379,238 @@ def filterLimit(img_matrix, limit):
     
 	return np.array(new_image).astype('uint8')
 
+# Filter Gradient borders
+def filterGradient(img_matrix):
+    
+    # Máscaras
+    g1 = [[0,0,0],[0,-1,0],[0,0,1]]
+
+    g2 = [[0,0,0],[0,0,-1],[0,1,0]]
+    
+    # Obtendo apenas um canal da imagem
+    img_matrix = getOneChannelFromRGBMatrix(img_matrix.copy())
+    
+    # Encontrar centro da matriz
+    center_g1 = findMatrixCenter(g1)
+    center_g2 = findMatrixCenter(g2)
+    
+    # Definir dicionário com operações a serem aplicadas em cada célula referente ao filtro
+    f1_operations = createDictFromCoordsCentered(g1, center_g1)
+    f2_operations = createDictFromCoordsCentered(g2, center_g2)
+    
+    # Colhendo informações da imagem
+    lin = len(img_matrix)
+    col = len(img_matrix[0])
+
+    new_m1 = copy.deepcopy(img_matrix)   
+    
+    # Máscara 1
+    for i in range(lin):
+        for j in range(col):
+            sum_ = 0
+            
+            for key, value in f1_operations.items():
+                try:
+                    sum_ = sum_ + img_matrix[i + value[0]][j + value[1]] * g1[key[0]][key[1]]
+                except:
+                    sum_ = sum_
+                    
+            new_m1[i][j] = abs(int(sum_))
+            
+    # Máscara 2    
+    new_m2 = copy.deepcopy(img_matrix)   
+
+    for i in range(lin):
+        for j in range(col):
+            sum_ = 0
+            
+            for key, value in f2_operations.items():
+                try:
+                    sum_ = sum_ + img_matrix[i + value[0]][j + value[1]] * g2[key[0]][key[1]]
+                except:
+                    sum_ = sum_
+                    
+            new_m2[i][j] = abs(int(sum_))
+    
+    new_m = np.array(new_m1) + np.array(new_m2)
+    
+    # Normalizando
+    new_m = new_m/new_m.max()
+    new_m = 255 * new_m
+    new_m = expandOneToThreeChannels(new_m)
+            
+    return np.array(new_m).astype('uint8')
+
+# Encode message
+def filterEncodeMsg(img_matrix, msg):
+    
+    """
+    use the red portion of an image (r, g, b) tuple to
+    hide the msg string characters as ASCII values
+    red value of the first pixel is used for length of string
+    """
+    length = len(msg)
+    # limit length of message to 255
+    if length > 255:
+        print("text too long! (don't exeed 255 characters)")
+        return False
+    if img.mode != 'RGB':
+        print("image mode needs to be RGB")
+        return False
+    # use a copy of image to hide the text in
+    encoded = img.copy()
+    width, height = img.size
+    index = 0
+    for row in range(height):
+        for col in range(width):
+            r, g, b = img.getpixel((col, row))
+            # first value is length of msg
+            if row == 0 and col == 0 and index < length:
+                asc = length
+            elif index <= length:
+                c = msg[index -1]
+                asc = ord(c)
+            else:
+                asc = r
+            encoded.putpixel((col, row), (asc, g , b))
+            index += 1
+    return encoded
+
+# Filter geometric mean 
+def filterGeometricMean(img_matrix, n):
+    
+    # Máscara
+    # Tamanho da máscara da média
+    mask = np.ones((n,n))
+    
+    # Obtendo apenas um canal da imagem
+    img_matrix = getOneChannelFromRGBMatrix(img_matrix.copy())
+    
+    # Encontrar centro da matriz
+    center = findMatrixCenter(mask)
+    
+    # Definir dicionário com operações a serem aplicadas em cada célula referente ao filtro
+    f_operations = createDictFromCoordsCentered(mask, center)
+    
+    # Colhendo informações da imagem
+    lin = len(img_matrix)
+    col = len(img_matrix[0])
+
+    new_m = copy.deepcopy(img_matrix)   
+    
+    for i in range(lin):
+        for j in range(col):
+            prod_ = np.float(1)
+            
+            for key, value in f_operations.items():
+                try:
+                    prod_ = prod_ * img_matrix[i + value[0]][j + value[1]]
+                except:
+                    prod_ = prod_
+                             
+            new_m[i][j] = prod_ ** (1/(n*n))
+    
+    # Normalizando
+    new_m = np.array(new_m)
+    new_m = new_m/new_m.max()
+    new_m = 255 * new_m
+    new_m = expandOneToThreeChannels(new_m)
+            
+    return np.array(new_m).astype('uint8')
+
+# Filter harmonic mean 
+def filterHarmonicMean(img_matrix, n):
+    
+    # Máscara
+    # Tamanho da máscara da média
+    mask = np.ones((n,n))
+    
+    # Obtendo apenas um canal da imagem
+    img_matrix = getOneChannelFromRGBMatrix(img_matrix.copy())
+    
+    # Encontrar centro da matriz
+    center = findMatrixCenter(mask)
+    
+    # Definir dicionário com operações a serem aplicadas em cada célula referente ao filtro
+    f_operations = createDictFromCoordsCentered(mask, center)
+    
+    # Colhendo informações da imagem
+    lin = len(img_matrix)
+    col = len(img_matrix[0])
+
+    new_m = copy.deepcopy(img_matrix)   
+    
+    for i in range(lin):
+        for j in range(col):
+            sum_ = 0
+            
+            for key, value in f_operations.items():
+                try:
+                    sum_ = sum_ + 1/img_matrix[i + value[0]][j + value[1]]
+                except:
+                    sum_ = sum_
+            
+            try:
+                new_m[i][j] = (n*n)/sum_
+            except:
+                new_m[i][j] = 0
+    
+    # Normalizando
+    new_m = np.array(new_m)
+    new_m = new_m/new_m.max()
+    new_m = 255 * new_m
+    new_m = expandOneToThreeChannels(new_m)
+            
+    return np.array(new_m).astype('uint8')
+
+# Filter harmonic mean 
+def filterContraHarmonicMean(img_matrix, n):
+    
+    # Máscara
+    # Tamanho da máscara da média
+    mask = np.ones((n,n))
+    
+    # Obtendo apenas um canal da imagem
+    img_matrix = getOneChannelFromRGBMatrix(img_matrix.copy())
+    
+    # Encontrar centro da matriz
+    center = findMatrixCenter(mask)
+    
+    # Definir dicionário com operações a serem aplicadas em cada célula referente ao filtro
+    f_operations = createDictFromCoordsCentered(mask, center)
+    
+    # Colhendo informações da imagem
+    lin = len(img_matrix)
+    col = len(img_matrix[0])
+
+    new_m = copy.deepcopy(img_matrix)   
+    
+    for i in range(lin):
+        for j in range(col):
+            sum_ = 0
+            sum_squares = 0
+            
+            for key, value in f_operations.items():
+                try:
+                    sum_ = sum_ + img_matrix[i + value[0]][j + value[1]]
+                    sum_squares = sum_squares + (img_matrix[i + value[0]][j + value[1]])**2
+                except:
+                    sum_ = sum_
+                    sum_squares = sum_squares
+            
+            try:
+                new_m[i][j] = sum_squares/sum_
+            except:
+                new_m[i][j] = 0
+    
+    # Normalizando
+    new_m = np.array(new_m)
+    new_m = new_m/new_m.max()
+    new_m = 255 * new_m
+    new_m = expandOneToThreeChannels(new_m)
+            
+    return np.array(new_m).astype('uint8')
+    
 ''' CALCULAR HISTOGRAMA '''
 
 # Funcao que retorna quantidade de ocorrencias por pixel e os pixels associados
@@ -523,3 +756,29 @@ def convertTupleToIntTuple(tuple_):
 		lista.append(int(tuple_[i]))
 	return tuple(lista)
     
+    
+''' CODIFICAÇÃO '''
+
+# Decode message
+def decodeMsg(img_matrix):
+    """
+    check the red portion of an image (r, g, b) tuple for
+    hidden message characters (ASCII values)
+    """
+    width, height = img.size
+    msg = ""
+    index = 0
+    for row in range(height):
+        for col in range(width):
+            try:
+                r, g, b = img.getpixel((col, row))
+            except ValueError:
+                # need to add transparency a for some .png files
+                r, g, b, a = img.getpixel((col, row))		
+            # first pixel r value is length of message
+            if row == 0 and col == 0:
+                length = r
+            elif index <= length:
+                msg += chr(r)
+            index += 1
+    return msg

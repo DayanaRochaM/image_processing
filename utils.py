@@ -60,6 +60,15 @@ def applyFilter(filter_, img_matrix, args):
 	elif filter_ == 'limit':
 		img_matrix = pi.filterLimit(img_matrix, args['limit']['limit'])
 
+	elif filter_ == 'geometric_mean':
+		img_matrix = pi.filterGeometricMean(img_matrix, args['geometric_mean'])
+
+	elif filter_ == 'harmonic_mean':
+		img_matrix = pi.filterHarmonicMean(img_matrix, args['harmonic_mean'])
+
+	elif filter_ == 'contraharmonic_mean':
+		img_matrix = pi.filterContraHarmonicMean(img_matrix, args['contraharmonic_mean'])
+
 	return img_matrix
 
 # Aplicar sequencia de filtros
@@ -109,24 +118,24 @@ def saveArgs(filter_, request, args):
 
 		args['convolution'] = matrix
 
-	elif (filter_ == "mean" or filter_ == "median"):
+	elif (filter_ == "mean" or filter_ == "median" or filter_ == "geometric_mean" or filter_ == "harmonic_mean" or filter_ == "contraharmonic_mean"):
 
 		# Pegando dimensão da matriz e checando se é um inteiro
 		text = request['text']
 		print(text)
 		isInteger = text.isdigit()
+		isInteger = isInteger
 
 		if not isInteger:
-			return  json.dumps({'success':False}), 500
+			return json.dumps({'success':False}), 500
 
 		dimension = int(text)
+		if not dimension%2 != 0:
+			return json.dumps({'success':False}), 500
+		
+		args[filter_] = dimension
 
-		if filter_ == "mean":
-			args['mean'] = dimension
-		else:
-			args['median'] = dimension
-
-	elif (filter_ == "gaussian"):
+	elif (filter_ == "gaussian" or filter_ == "laplacian"):
 		# Pegando dimensão da matriz e checando se é um inteiro
 		n = request['n']
 		print("n: " + n)
@@ -139,23 +148,7 @@ def saveArgs(filter_, request, args):
 		except:
 			return  json.dumps({'success':False}), 500
 
-		args['gaussian'] = {'n': int(n), 'sigma': sigma}
-
-	elif (filter_ == "laplacian"):
-
-		# Pegando dimensão da matriz e checando se é um inteiro
-		n = request['n']
-		print("n: " + n)
-
-		sigma = request['sigma']
-		print("sigma: " + sigma)
-
-		try:
-			sigma = float(sigma)
-		except:
-			return  json.dumps({'success':False}), 500
-
-		args['laplacian'] = {'n': int(n), 'sigma': sigma}
+		args[filter_] = {'n': int(n), 'sigma': sigma}
 
 	elif (filter_ == "highboost"):
 
