@@ -4,6 +4,7 @@ from os.path import isfile, join
 from matplotlib import pyplot as mpl
 from itertools import chain
 import image_processing as pi
+from PIL import Image
 import utils
 from werkzeug.utils import secure_filename
 import json
@@ -27,9 +28,15 @@ path_original = path_ + "original/"
 path_actual = path_ + "actual/"
 path_histogram_img = path_ +  "histogram/"
 file_histogram_img = "hist-image.png"
+<<<<<<< HEAD
 filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit","geometric_mean","harmonic_mean","contraharmonic_mean"]
 filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit","geometric_mean","harmonic_mean","contraharmonic_mean"]
 non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points","non-limit","non-geometric_mean","non-harmonic_mean","non-contraharmonic_mean"]
+=======
+filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit", "encode_msg"]
+filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit","gradient","encode_msg"]
+non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points","non-limit","non-gradient","non-encode_msg"]
+>>>>>>> fd722a5c78fd38872a2e525f2bfbe3a133261dcd
 global args 
 #args = {'convolution':None,'mean':None,'median':None,'gaussian':None,'highboost':None, 'two_points':None}
 args = {}
@@ -100,8 +107,7 @@ def apply_filter():
 				# Tratamento para filtros com argumentos
 				if(filter_ in filters_with_args):
 					request_form = copy.deepcopy(request.form)
-					new_args = utils.saveArgs(filter_,  request_form, args)
-					print(new_args)
+					new_args = utils.saveArgs(filter_,  request_form, args, complete_filename)
 					args = new_args.copy()
 				
 				img_matrix = utils.applyFilter(filter_, img_matrix, args)
@@ -123,11 +129,17 @@ def apply_filter():
 			# Limpando diretório
 			utils.cleaningFolder(path_actual)
 
-			# Salvando arquivo
+			# Nome do arquivo
 			complete_path = path_actual + filename
-			pi.saveImage(complete_path, img_matrix) 
-			#f.save('static/images/original/' + secure_filename(f.content_type).replace('_','.'))
 
+			# Salvando arquivo
+			if(filter_ == 'encode_msg'):
+				img_matrix.save(complete_path)
+
+			else:
+				pi.saveImage(complete_path, img_matrix) 
+				#f.save('static/images/original/' + secure_filename(f.content_type).replace('_','.'))
+			
 			print(filters_in_use)
 		else:
 
@@ -163,6 +175,26 @@ def show_histogram():
 	mpl.clf()
 
 	return json.dumps({'success':True}), 200
+
+# Endpoint para calcular o histograma da imagem
+@app.route('/decode_image_msg', methods=['GET'])
+def decode_image_msg():
+	
+	# Pegando nome do arquivo
+	files = listdir(path_actual)
+	file_ = files[0]
+
+	# Lendo arquivo de imagem
+	complete_filename = path_actual + file_
+
+	img = Image.open(complete_filename)
+
+	# Descobrir mensagem
+	msg = pi.decodeMsg(img)
+	print(msg)
+	#return json.dumps({'success':True, 'data':'oi'}), 200
+	return jsonify({'mensagem': msg})
+
 
 
 

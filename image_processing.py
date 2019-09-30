@@ -442,7 +442,7 @@ def filterGradient(img_matrix):
     return np.array(new_m).astype('uint8')
 
 # Encode message
-def filterEncodeMsg(img_matrix, msg):
+def filterEncodeMsg(img, msg):
     
     """
     use the red portion of an image (r, g, b) tuple to
@@ -450,10 +450,6 @@ def filterEncodeMsg(img_matrix, msg):
     red value of the first pixel is used for length of string
     """
     length = len(msg)
-    # limit length of message to 255
-    if length > 255:
-        print("text too long! (don't exeed 255 characters)")
-        return False
     if img.mode != 'RGB':
         print("image mode needs to be RGB")
         return False
@@ -474,6 +470,7 @@ def filterEncodeMsg(img_matrix, msg):
                 asc = r
             encoded.putpixel((col, row), (asc, g , b))
             index += 1
+
     return encoded
 
 # Filter geometric mean 
@@ -760,7 +757,7 @@ def convertTupleToIntTuple(tuple_):
 ''' CODIFICAÇÃO '''
 
 # Decode message
-def decodeMsg(img_matrix):
+def decodeMsg(img):
     """
     check the red portion of an image (r, g, b) tuple for
     hidden message characters (ASCII values)

@@ -29,7 +29,9 @@
 		padding: 0;
 		font-weight: 600;
 		color: #333333;
-		font-family: "Snell Roundhand";
+		/*font-family: "Snell Roundhand";*/
+		font-family: "URW Chancery L";
+		font-style: italic;
 	}
 
 
@@ -520,7 +522,7 @@
 
 	#main form{
 		margin-top: 15px;
-		margin-bottom: 0px;
+		margin-bottom: 3px;
 	}
 
 	#img_container{
@@ -613,7 +615,8 @@
 		text-align: center;
 		margin-top: 40px; 
 		margin-bottom: 40px; 
-		font-family: "Snell Roundhand";
+		/*font-family: "Snell Roundhand";*/
+		font-family: "URW Chancery L";
 		font-style: italic;
 	}
 
@@ -621,10 +624,10 @@
 		color: #fff;
 		text-align: center;
 		overflow: auto;
-		padding-bottom: 4px;
 		border-bottom: 1px solid #808080;
 		border-top: 1px solid #808080;
-		font-family: "Snell Roundhand";
+		/*font-family: "Snell Roundhand";*/
+		font-family: "URW Chancery L";
 		font-style: italic;
 	}
 
@@ -666,7 +669,9 @@
 		width: 100%;
 	    background: #2980b9;
 	    color: #fff;
-	    opacity: 0.6;
+	    opacity: 0.8;
+	    margin-top: 5px;
+	    margin-bottom: 5px;
 	}
 
 	label.label-filters
@@ -691,7 +696,7 @@
 	}
 
 	#image-histogram {
-		margin-top: 30px;
+		margin-top: 0px;
 		margin-bottom: 40px;
 	}
 
