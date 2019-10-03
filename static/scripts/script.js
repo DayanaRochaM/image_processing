@@ -7,6 +7,13 @@ $(function() { //shorthand document.ready function
     var graph = document.getElementById("myGraph");
     var graph_point0, graph_point1 , graph_point2;
 
+    // Pro checkbox de coloração ou nao da imagem
+    $("#colorful").change(function() {
+        if(this.checked) {
+            //Do stuff
+        }
+    });
+
     function tryLoadImage(){
         if (extension == "jpg"){
             extension = "jpeg";

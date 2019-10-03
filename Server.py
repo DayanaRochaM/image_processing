@@ -28,16 +28,13 @@ path_original = path_ + "original/"
 path_actual = path_ + "actual/"
 path_histogram_img = path_ +  "histogram/"
 file_histogram_img = "hist-image.png"
-<<<<<<< HEAD
+
 filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit","geometric_mean","harmonic_mean","contraharmonic_mean"]
 filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit","geometric_mean","harmonic_mean","contraharmonic_mean"]
 non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points","non-limit","non-geometric_mean","non-harmonic_mean","non-contraharmonic_mean"]
-=======
-filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit", "encode_msg"]
-filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit","gradient","encode_msg"]
-non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points","non-limit","non-gradient","non-encode_msg"]
->>>>>>> fd722a5c78fd38872a2e525f2bfbe3a133261dcd
+
 global args 
+global is_img_colorful
 #args = {'convolution':None,'mean':None,'median':None,'gaussian':None,'highboost':None, 'two_points':None}
 args = {}
 global filters_in_use 
@@ -50,6 +47,11 @@ if __name__ == '__main__':
 @app.route('/', methods=['GET'])
 def home():
 	return render_template('index.html')
+
+@app.route('/is_colorful', methods=['POST'])
+def is_colorful():
+	global is_img_colorful
+	# pegar dado do formulario
 
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
