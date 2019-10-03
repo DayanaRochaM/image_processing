@@ -6,6 +6,9 @@ $(function() { //shorthand document.ready function
     // Suporte para filtro de dois pontos
     var graph = document.getElementById("myGraph");
     var graph_point0, graph_point1 , graph_point2;
+    // Variáveis para controle de cache
+    var cache_num = 0, img;
+    var cache = {};
 
     // Pro checkbox de coloração ou nao da imagem
     $("#colorful").change(function() {
@@ -14,6 +17,20 @@ $(function() { //shorthand document.ready function
         }
     });
 
+    function addImgInCache(src){
+
+        cache_num = cache_num + 1;
+        cache[cache_num] = src;
+    }
+
+    function getImgFromCache(){
+
+        cache_num = cache_num - 1;
+        console.log(cache_num);
+        return cache[cache_num];
+        
+    }
+
     function tryLoadImage(){
         if (extension == "jpg"){
             extension = "jpeg";
@@ -21,7 +38,9 @@ $(function() { //shorthand document.ready function
         if (extension == "tif"){
             extension = "png";
         }
-        document.getElementById('imageid').src = "static/images/actual/image.".concat(extension).concat("?") + new Date().getTime();
+        var src = "static/images/actual/image.".concat(extension).concat("?") + new Date().getTime();
+        document.getElementById('imageid').src = src;
+        return src;
     }
 
     function replotGraph(){
@@ -98,7 +117,8 @@ $(function() { //shorthand document.ready function
             	contentType: false,
         	success: function() {
     	      	//display message back to user here
-                tryLoadImage();
+                var src = tryLoadImage();
+                addImgInCache(src);
                 $('.filter').attr('disabled', false);
                 $('.filter-with-text').attr('disabled', false);
                 $('.encode').attr('disabled', false);
@@ -144,9 +164,10 @@ $(function() { //shorthand document.ready function
                 contentType: false,
             success: function() {
                 //display message back to user here
-                tryLoadImage();
+                var src = tryLoadImage();
                 $('#'.concat(id)).attr('disabled', true);
                 $('#'.concat('non-',id)).attr('disabled', false);
+                addImgInCache(src);
             },
             error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
@@ -185,9 +206,10 @@ $(function() { //shorthand document.ready function
                 contentType: false,
             success: function() {
                 //display message back to user here
-                tryLoadImage();
+                var src = tryLoadImage();
                 $('#'.concat(id)).attr('disabled', true);
                 $('#'.concat('non-',id)).attr('disabled', false);
+                addImgInCache(src);
             },
             error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
@@ -199,29 +221,12 @@ $(function() { //shorthand document.ready function
 
     // Para retirar filtros. O controle é feito com o id do botão.
     $(".non-filter").click(function() {
-        var formFilter = new FormData();
         var id = this.id;
-        formFilter.append('filter', this.id); 
-
-        $.ajax({
-            type: "POST",
-            url: "/apply_filter",
-            data: formFilter,
-            processData: false,
-                contentType: false,
-            success: function() {
-                //display message back to user here
-                tryLoadImage();
-                $('#'.concat(id)).attr('disabled', true);
-                $('#'.concat(id.slice(4))).attr('disabled', false);
-                
-            },
-            error: function (request, status, erro) {
-                alert("Problema ocorrido: " + status + "\nDescição: " + erro);
-                //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
-                //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
-            }
-        });
+        
+        $('#'.concat(id)).attr('disabled', true);
+        $('#'.concat(id.slice(4))).attr('disabled', false);
+        var src = "http://127.0.0.1:5000/".concat(getImgFromCache());
+        document.getElementById('imageid').src = src;
     });
 
     // Para calcular e exibir histograma da imagem

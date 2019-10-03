@@ -35,6 +35,7 @@ non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "no
 
 global args 
 global is_img_colorful
+global extension
 #args = {'convolution':None,'mean':None,'median':None,'gaussian':None,'highboost':None, 'two_points':None}
 args = {}
 global filters_in_use 
@@ -59,8 +60,7 @@ def upload_image():
 	if request.method == 'POST':
 
 		file = request.files['file']
-		utils.cleaningFolder(path_original)
-		utils.cleaningFolder(path_actual)	
+		utils.cleaningFolder(path_actual)
 		f = pi.transformImage(file)
 		name = secure_filename(file.content_type)
 
@@ -71,12 +71,14 @@ def upload_image():
 
 
 		# Salvando arquivo original
-		complete_path = path_original + name.replace('_','.')
+		name = name.replace('_','.')
+		complete_path = path_actual + name
 		pi.saveImage(complete_path, f) 
-		# Salvando copia a ser editada
-		complete_path = path_actual + name.replace('_','.')
-		pi.saveImage(complete_path, f) 
-		#f.save(path + secure_filename(f.content_type).replace('_','.'))
+
+		# Salvando extansão
+		global extension
+		extension = name[name.index('.')+1:]
+		print(extension)
 
 	return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
@@ -86,6 +88,7 @@ def upload_image():
 def apply_filter():
 	
 	# Pegando nome do arquivo
+	utils.getCurrentImage(path_actual, extension)
 	files = listdir(path_actual)
 	if request.method == 'POST' and len(files) == 1:
 
@@ -100,11 +103,12 @@ def apply_filter():
 		if filter_ in filters_list or filter_ in non_filters_list:
 
 			filename = file.replace('_','.')
-			if filter_ in filters_list:
 
-				# Lendo arquivo
-				complete_filename = path_actual + filename
-				img_matrix = pi.readImage(complete_filename)
+			# Lendo arquivo
+			complete_filename = path_actual + filename
+			img_matrix = pi.readImage(complete_filename)
+
+			if filter_ in filters_list:
 
 				# Tratamento para filtros com argumentos
 				if(filter_ in filters_with_args):
@@ -116,17 +120,6 @@ def apply_filter():
 				print(filter_)
 				# Aplicando filtro
 				filters_in_use.append(filter_)
-				
-			elif filter_ in non_filters_list:
-
-				# Lendo arquivo
-				complete_filename = path_original + filename
-				img_matrix = pi.readImage(complete_filename)
-					
-				# Removendo um filtro
-				filters_in_use.remove(filter_[4:])
-				print(filter_[4:])
-				img_matrix = utils.removeFilter(filter_, img_matrix, filters_in_use, args)
 
 			# Limpando diretório
 			utils.cleaningFolder(path_actual)
