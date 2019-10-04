@@ -7,7 +7,7 @@ $(function() { //shorthand document.ready function
     var graph = document.getElementById("myGraph");
     var graph_point0, graph_point1 , graph_point2;
     // Variáveis para controle de cache
-    var cache_num = 0, img;
+    var cache_num = 1, img;
     var cache = {};
 
     // Pro checkbox de coloração ou nao da imagem
@@ -38,7 +38,7 @@ $(function() { //shorthand document.ready function
         if (extension == "tif"){
             extension = "png";
         }
-        var src = "static/images/actual/image.".concat(extension).concat("?") + new Date().getTime();
+        var src = "static/images/actual/image".concat(cache_num.toString()).concat(".").concat(extension).concat("?") + new Date().getTime();
         document.getElementById('imageid').src = src;
         return src;
     }
@@ -225,8 +225,8 @@ $(function() { //shorthand document.ready function
         
         $('#'.concat(id)).attr('disabled', true);
         $('#'.concat(id.slice(4))).attr('disabled', false);
-        var src = "http://127.0.0.1:5000/".concat(getImgFromCache());
-        document.getElementById('imageid').src = src;
+        getImgFromCache();
+        tryLoadImage();
     });
 
     // Para calcular e exibir histograma da imagem

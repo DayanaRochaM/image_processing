@@ -82,7 +82,7 @@ def applyFilter(filter_, img_matrix, args):
 
 	return img_matrix
 
-def getCurrentImage(path_actual, extension):
+def getCurrentImage(path_actual, file_version, extension):
 	# This is the image url.
 	image_url = "http://127.0.0.1:5000/static/images/actual/image." + extension
 	# Open the url image, set stream to True, this will return the stream content.
@@ -100,7 +100,7 @@ def getCurrentImage(path_actual, extension):
 	#urllib.request.urlretrieve(image_url, path_actual + "image." + extension)
 
 	r = requests.get(image_url)
-	with open(path_actual+'image.'+extension, 'wb') as f:
+	with open(path_actual+'image' + str(file_version) + '.' + extension, 'wb') as f:
 		f.write(r.content)
 
 # Aplicar sequencia de filtros

@@ -35,11 +35,14 @@ non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "no
 
 global args 
 global is_img_colorful
+global filters_in_use 
 global extension
+global file_version
+
 #args = {'convolution':None,'mean':None,'median':None,'gaussian':None,'highboost':None, 'two_points':None}
 args = {}
-global filters_in_use 
 filters_in_use = []
+file_version = 1
 #CORS(app)  
 
 if __name__ == '__main__':    
@@ -69,9 +72,10 @@ def upload_image():
 			name = name.replace("_tiff","_png")
 			print(name)
 
-
 		# Salvando arquivo original
-		name = name.replace('_','.')
+		global file_version
+		file_version = 1
+		name = name.replace('_', str(file_version) + '.')
 		complete_path = path_actual + name
 		pi.saveImage(complete_path, f) 
 
@@ -86,9 +90,10 @@ def upload_image():
 # A ideia é receber apenas uma string e aqui decidir o que aplicar.
 @app.route('/apply_filter', methods=['POST'])
 def apply_filter():
+
+	global file_version
 	
 	# Pegando nome do arquivo
-	utils.getCurrentImage(path_actual, extension)
 	files = listdir(path_actual)
 	if request.method == 'POST' and len(files) == 1:
 
@@ -102,7 +107,7 @@ def apply_filter():
 
 		if filter_ in filters_list or filter_ in non_filters_list:
 
-			filename = file.replace('_','.')
+			filename = file.replace('_',str(file_version)+'.')
 
 			# Lendo arquivo
 			complete_filename = path_actual + filename
@@ -121,11 +126,10 @@ def apply_filter():
 				# Aplicando filtro
 				filters_in_use.append(filter_)
 
-			# Limpando diretório
-			utils.cleaningFolder(path_actual)
-
 			# Nome do arquivo
-			complete_path = path_actual + filename
+			file_version = file_version + 1
+			file_ = 'image' + str(file_version) + '.' + extension
+			complete_path = path_actual + file_
 
 			# Salvando arquivo
 			if(filter_ == 'encode_msg'):
@@ -191,7 +195,8 @@ def decode_image_msg():
 	return jsonify({'mensagem': msg})
 
 
-
+def setFileVersion(n):
+	file_version = n
 
 
 
