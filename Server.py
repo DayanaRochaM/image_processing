@@ -93,6 +93,7 @@ def apply_filter():
 
 	global file_version
 	
+	import time
 	# Pegando nome do arquivo
 	files = listdir(path_actual)
 	if request.method == 'POST' and len(files) == 1:
@@ -123,8 +124,6 @@ def apply_filter():
 				
 				img_matrix = utils.applyFilter(filter_, img_matrix, args)
 				print(filter_)
-				# Aplicando filtro
-				filters_in_use.append(filter_)
 
 			# Nome do arquivo
 			file_version = file_version + 1
@@ -138,8 +137,7 @@ def apply_filter():
 			else:
 				pi.saveImage(complete_path, img_matrix) 
 				#f.save('static/images/original/' + secure_filename(f.content_type).replace('_','.'))
-			
-			print(filters_in_use)
+		
 		else:
 
 			return json.dumps({'success':False}), 500
@@ -193,10 +191,6 @@ def decode_image_msg():
 	print(msg)
 	#return json.dumps({'success':True, 'data':'oi'}), 200
 	return jsonify({'mensagem': msg})
-
-
-def setFileVersion(n):
-	file_version = n
 
 
 

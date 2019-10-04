@@ -82,27 +82,6 @@ def applyFilter(filter_, img_matrix, args):
 
 	return img_matrix
 
-def getCurrentImage(path_actual, file_version, extension):
-	# This is the image url.
-	image_url = "http://127.0.0.1:5000/static/images/actual/image." + extension
-	# Open the url image, set stream to True, this will return the stream content.
-	# resp = requests.get(image_url, stream=True)
-	# # Open a local file with wb ( write binary ) permission.
-	# local_file = open(path_actual + 'image.jpg', 'wb')
-	# # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
-	# resp.raw.decode_content = True
-	# # Copy the response stream raw data to local image file.
-	# shutil.copyfileobj(resp.raw, local_file)
-
-	# Invoke wget download method to download specified url image.
-	#local_image_filename = wget.download(image_url)
-	#print(path_actual + "image." + extension)
-	#urllib.request.urlretrieve(image_url, path_actual + "image." + extension)
-
-	r = requests.get(image_url)
-	with open(path_actual+'image' + str(file_version) + '.' + extension, 'wb') as f:
-		f.write(r.content)
-
 # Aplicar sequencia de filtros
 def removeFilter(filter_, img_matrix, filters_in_use, args):
 	filter_ = filter_[4:]
