@@ -82,9 +82,9 @@ def applyFilter(filter_, img_matrix, args):
 
 	return img_matrix
 
-def getCurrentImage(path_actual, extension):
+def getCurrentImage(path_actual, extension, complement):
 	# This is the image url.
-	image_url = "http://127.0.0.1:5000/static/images/actual/image." + extension
+	image_url = "http://127.0.0.1:5000/"+ complement 
 	# Open the url image, set stream to True, this will return the stream content.
 	# resp = requests.get(image_url, stream=True)
 	# # Open a local file with wb ( write binary ) permission.

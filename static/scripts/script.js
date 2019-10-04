@@ -7,7 +7,7 @@ $(function() { //shorthand document.ready function
     var graph = document.getElementById("myGraph");
     var graph_point0, graph_point1 , graph_point2;
     // Variáveis para controle de cache
-    var cache_num = 0, img;
+    var cache_num = -1, img;
     var cache = {};
 
     // Pro checkbox de coloração ou nao da imagem
@@ -20,7 +20,9 @@ $(function() { //shorthand document.ready function
     function addImgInCache(src){
 
         cache_num = cache_num + 1;
+        console.log(cache_num);
         cache[cache_num] = src;
+        console.log(cache);
     }
 
     function getImgFromCache(){
@@ -154,7 +156,9 @@ $(function() { //shorthand document.ready function
     $(".filter").click(function() {
         var formFilter = new FormData();
         var id = this.id;
+        var complement_img = cache[cache_num];
         formFilter.append('filter', id); 
+        formFilter.append('complement', complement_img); 
 
         $.ajax({
             type: "POST",

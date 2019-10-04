@@ -38,8 +38,6 @@ global is_img_colorful
 global extension
 #args = {'convolution':None,'mean':None,'median':None,'gaussian':None,'highboost':None, 'two_points':None}
 args = {}
-global filters_in_use 
-filters_in_use = []
 #CORS(app)  
 
 if __name__ == '__main__':    
@@ -87,8 +85,12 @@ def upload_image():
 @app.route('/apply_filter', methods=['POST'])
 def apply_filter():
 	
+	import time
 	# Pegando nome do arquivo
-	utils.getCurrentImage(path_actual, extension)
+	complement = request.form['complement']
+	utils.getCurrentImage(path_actual, extension, complement)
+	print("salvou o arquivo")
+	time.sleep(2.4)
 	files = listdir(path_actual)
 	if request.method == 'POST' and len(files) == 1:
 
@@ -118,8 +120,6 @@ def apply_filter():
 				
 				img_matrix = utils.applyFilter(filter_, img_matrix, args)
 				print(filter_)
-				# Aplicando filtro
-				filters_in_use.append(filter_)
 
 			# Limpando diretório
 			utils.cleaningFolder(path_actual)
@@ -134,8 +134,7 @@ def apply_filter():
 			else:
 				pi.saveImage(complete_path, img_matrix) 
 				#f.save('static/images/original/' + secure_filename(f.content_type).replace('_','.'))
-			
-			print(filters_in_use)
+		
 		else:
 
 			return json.dumps({'success':False}), 500
