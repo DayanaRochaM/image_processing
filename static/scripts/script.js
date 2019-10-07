@@ -7,8 +7,8 @@ $(function() { //shorthand document.ready function
     var graph = document.getElementById("myGraph");
     var graph_point0, graph_point1 , graph_point2;
     // Variáveis para controle de cache
-    var cache_num = 1, img;
-    var cache = {};
+    var cache_num = 0, img;
+    var cache = {}, applied_filters = {};
 
     // Pro checkbox de coloração ou nao da imagem
     $("#colorful").change(function() {
@@ -18,29 +18,25 @@ $(function() { //shorthand document.ready function
     });
 
     function addImgInCache(src){
-
         cache_num = cache_num + 1;
-        console.log(cache_num);
         cache[cache_num] = src;
-        console.log(cache);
     }
 
     function getImgFromCache(){
 
         cache_num = cache_num - 1;
-        console.log(cache_num);
         return cache[cache_num];
         
     }
 
-    function tryLoadImage(){
+    function tryLoadImage(num){
         if (extension == "jpg"){
             extension = "jpeg";
         }
         if (extension == "tif"){
             extension = "png";
         }
-        var src = "static/images/actual/image".concat(cache_num.toString()).concat(".").concat(extension).concat("?") + new Date().getTime();
+        var src = "static/images/actual/image".concat(num.toString()).concat(".").concat(extension).concat("?") + new Date().getTime();
         document.getElementById('imageid').src = src;
         return src;
     }
@@ -74,6 +70,15 @@ $(function() { //shorthand document.ready function
     function getCorrespondent(value, scale){
         var result = value*scale/255;
         return result;
+    }
+
+    function UpdateUndoButton(){
+        var length = Object.keys(applied_filters).length;
+        if (length == 0) {
+            $('.non-filter').attr('disabled',true);
+        }else {
+            $('.non-filter').attr('disabled',false);
+        }
     }
 
     // Para pegar as alterações no arquivo a ser submetidas
@@ -119,8 +124,10 @@ $(function() { //shorthand document.ready function
             	contentType: false,
         	success: function() {
     	      	//display message back to user here
-                var src = tryLoadImage();
+                var src = "static/images/actual/image1.".concat(extension).concat("?") + new Date().getTime();
+                cache_num = 0;
                 addImgInCache(src);
+                tryLoadImage(cache_num);
                 $('.filter').attr('disabled', false);
                 $('.filter-with-text').attr('disabled', false);
                 $('.encode').attr('disabled', false);
@@ -159,7 +166,7 @@ $(function() { //shorthand document.ready function
         var complement_img = cache[cache_num];
         formFilter.append('filter', id); 
         formFilter.append('complement', complement_img); 
-
+        //formFilter.append('num_image', cache_num+1);
         $.ajax({
             type: "POST",
             url: "/apply_filter",
@@ -168,10 +175,11 @@ $(function() { //shorthand document.ready function
                 contentType: false,
             success: function() {
                 //display message back to user here
-                var src = tryLoadImage();
+                applied_filters[cache_num] = id;
+                var src = tryLoadImage(cache_num+1);
                 $('#'.concat(id)).attr('disabled', true);
-                $('#'.concat('non-',id)).attr('disabled', false);
                 addImgInCache(src);
+                UpdateUndoButton();
             },
             error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
@@ -210,10 +218,11 @@ $(function() { //shorthand document.ready function
                 contentType: false,
             success: function() {
                 //display message back to user here
-                var src = tryLoadImage();
+                applied_filters[cache_num] = id;
+                var src = tryLoadImage(cache_num+1);
                 $('#'.concat(id)).attr('disabled', true);
-                $('#'.concat('non-',id)).attr('disabled', false);
                 addImgInCache(src);
+                UpdateUndoButton();
             },
             error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);
@@ -225,12 +234,28 @@ $(function() { //shorthand document.ready function
 
     // Para retirar filtros. O controle é feito com o id do botão.
     $(".non-filter").click(function() {
-        var id = this.id;
-        
-        $('#'.concat(id)).attr('disabled', true);
-        $('#'.concat(id.slice(4))).attr('disabled', false);
-        getImgFromCache();
-        tryLoadImage();
+         $.ajax({
+            type: "GET",
+            url: "/remove_filter",
+            processData: false,
+                contentType: false,
+            success: function() {
+                //display message back to user here
+                //$('#'.concat(id)).attr('disabled', true);
+                var length = Object.keys(applied_filters).length;
+                var filter = applied_filters[length];
+                delete applied_filters[length];
+                $('#'.concat(filter)).attr('disabled', false);
+                getImgFromCache();
+                tryLoadImage(cache_num);
+                UpdateUndoButton();
+            },
+            error: function (request, status, erro) {
+                alert("Problema ocorrido: " + status + "\nDescição: " + erro);
+                //Abaixo está listando os header do conteudo que você requisitou, só para confirmar se você setou os header e dataType corretos
+                //alert("Informações da requisição: \n" + request.getAllResponseHeaders());
+            }
+    });
     });
 
     // Para calcular e exibir histograma da imagem
@@ -271,7 +296,6 @@ $(function() { //shorthand document.ready function
             processData: false,
                 contentType: false,
             success: function(response) {
-                console.log(response);
                 $("#decoded_msg").val(response['mensagem'])
                 //display message back to user here
                 /*
@@ -307,7 +331,11 @@ $(function() { //shorthand document.ready function
                 contentType: false,
             success: function() {
                 //display message back to user here
-                tryLoadImage();
+                applied_filters[cache_num] = id;
+                var src = tryLoadImage(cache_num+1);
+                $('#'.concat(id)).attr('disabled', true);
+                addImgInCache(src);
+                UpdateUndoButton();
             },
             error: function (request, status, erro) {
                 alert("Problema ocorrido: " + status + "\nDescição: " + erro);

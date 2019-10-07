@@ -29,8 +29,8 @@ path_actual = path_ + "actual/"
 path_histogram_img = path_ +  "histogram/"
 file_histogram_img = "hist-image.png"
 
-filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit","geometric_mean","harmonic_mean","contraharmonic_mean"]
-filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit","geometric_mean","harmonic_mean","contraharmonic_mean"]
+filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit","geometric_mean","harmonic_mean","contraharmonic_mean","encode_msg"]
+filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit","geometric_mean","harmonic_mean","contraharmonic_mean","gradient","encode_msg"]
 non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points","non-limit","non-geometric_mean","non-harmonic_mean","non-contraharmonic_mean"]
 
 global args 
@@ -96,19 +96,28 @@ def apply_filter():
 	import time
 	# Pegando nome do arquivo
 	files = listdir(path_actual)
-	if request.method == 'POST' and len(files) == 1:
-
-		file = files[0]
-		print(file)
+	if request.method == 'POST':
 
 		# Indicar que estamos usando a variavel global
 		global args
+		global filters_in_use
 
 		filter_ = request.form['filter']
 
+		for file_ in files:
+			print("entrou")
+			print("file" + file_)
+			if "image" + str(file_version) + "_" in file_ and filter_ in filters_in_use:
+				print("estrou")
+				return json.dumps({'success':True}), 200
+
+		file = files[file_version-1]
+		print(file)
+
 		if filter_ in filters_list or filter_ in non_filters_list:
 
-			filename = file.replace('_',str(file_version)+'.')
+			print("file v" + str(file_version))
+			filename = file.replace('_',str(file_version+1)+'.')
 
 			# Lendo arquivo
 			complete_filename = path_actual + filename
@@ -142,10 +151,34 @@ def apply_filter():
 
 			return json.dumps({'success':False}), 500
 
+		filters_in_use.append(filter_)
+
 		return json.dumps({'success':True}), 200
 
 	else:
 		return json.dumps({'success':False, 'error':{'type':500, 'message':'Requisição incorreta!'}}),500 
+
+# Aqui será a parte de gestao de filtros aplicados.
+# A ideia é receber apenas uma string e aqui decidir o que aplicar.
+@app.route('/remove_filter', methods=['GET'])
+def remove_filter():
+
+	print('entrou')
+
+	# Indicar que estamos usando a variavel global
+	global filters_in_use
+	global file_version
+
+	if len(filters_in_use) > 0:
+		filter_ = filters_in_use[-1]
+		filters_in_use.remove(filter_)
+		file_version = file_version - 1
+
+		print(filters_in_use)
+		print(file_version)
+		return json.dumps({'success':True}), 200
+		
+	return json.dumps({'success':False, 'error':{'type':500, 'message':'Requisição incorreta!'}}),500 
 
 # Endpoint para calcular o histograma da imagem
 @app.route('/show_histogram', methods=['GET'])
@@ -179,7 +212,7 @@ def decode_image_msg():
 	
 	# Pegando nome do arquivo
 	files = listdir(path_actual)
-	file_ = files[0]
+	file_ = files[file_version-1]
 
 	# Lendo arquivo de imagem
 	complete_filename = path_actual + file_
