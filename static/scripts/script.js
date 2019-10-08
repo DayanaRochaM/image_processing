@@ -2,20 +2,13 @@ $(function() { //shorthand document.ready function
     
     // Variaveis usadas
     var name_file, list, extension, form, p1x, p1y, p2x, p2y;
-    var extension_aus = "jpeg", graph_width, graph_height;
+    var extension_aus = "jpeg", graph_width, graph_height, colorful = 'False', file, form;
     // Suporte para filtro de dois pontos
     var graph = document.getElementById("myGraph");
     var graph_point0, graph_point1 , graph_point2;
     // Variáveis para controle de cache
     var cache_num = 0, img;
     var cache = {}, applied_filters = {};
-
-    // Pro checkbox de coloração ou nao da imagem
-    $("#colorful").change(function() {
-        if(this.checked) {
-            //Do stuff
-        }
-    });
 
     function addImgInCache(src){
         cache_num = cache_num + 1;
@@ -82,14 +75,21 @@ $(function() { //shorthand document.ready function
     }
 
     // Para pegar as alterações no arquivo a ser submetidas
-	var form;
 	$('#file').change(function (event) {
-    	form = new FormData();
-    	form.append('file', event.target.files[0]); 
+    	file = event.target.files[0];
         name_file = event.target.files[0].name;
         list = name_file.split(".");
         extension = list[list.length-1];
 	});
+
+    // Pro checkbox de coloração ou nao da imagem
+    $("#colorful").change(function() {
+        if(this.checked) {
+            colorful = "True";
+        }else{
+            colorful = "False";
+        }
+    });
 
     // Pegar alterações de dois pontos
     $('#two_points-p1x').change(function (event) {
@@ -116,6 +116,10 @@ $(function() { //shorthand document.ready function
     });
 
 	$("#submit").click(function() {
+        form = new FormData();
+        form.append('file', file);
+        form.append('is_colorful', colorful);
+        console.log(colorful);
         $.ajax({
         	type: "POST",
         	url: "/upload_image",

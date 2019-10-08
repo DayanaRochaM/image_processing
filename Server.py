@@ -52,19 +52,22 @@ if __name__ == '__main__':
 def home():
 	return render_template('index.html')
 
-@app.route('/is_colorful', methods=['POST'])
-def is_colorful():
-	global is_img_colorful
-	# pegar dado do formulario
-
 @app.route('/upload_image', methods=['POST'])
 def upload_image():
 	
+	global is_img_colorful
+
 	if request.method == 'POST':
 
 		file = request.files['file']
+		is_img_colorful = 'True' in request.form['is_colorful']
 		utils.cleaningFolder(path_actual)
-		f = pi.transformImage(file)
+
+		if is_img_colorful:
+			f = pi.readImage(file)
+		else:
+			f = pi.transformImage(file)
+
 		name = secure_filename(file.content_type)
 
 		if("_tiff" in name):
@@ -77,7 +80,11 @@ def upload_image():
 		file_version = 1
 		name = name.replace('_', str(file_version) + '.')
 		complete_path = path_actual + name
-		pi.saveImage(complete_path, f) 
+
+		if not is_img_colorful:
+			pi.saveImage(complete_path, f) 
+		else:
+			pi.saveImageColorful(complete_path, f)
 
 		# Salvando extansão
 		global extension
@@ -140,12 +147,11 @@ def apply_filter():
 			complete_path = path_actual + file_
 
 			# Salvando arquivo
-			if(filter_ == 'encode_msg'):
-				img_matrix.save(complete_path)
-
-			else:
+			if not is_img_colorful:
 				pi.saveImage(complete_path, img_matrix) 
-				#f.save('static/images/original/' + secure_filename(f.content_type).replace('_','.'))
+			else:
+				pi.saveImageColorful(complete_path, img_matrix)
+			#f.save('static/images/original/' + secure_filename(f.content_type).replace('_','.'))
 		
 		else:
 

@@ -26,9 +26,6 @@ def applyFilter(filter_, img_matrix, args):
 	elif filter_ == 'power':
 		img_matrix = pi.filterContrastPow(img_matrix)
 
-	elif filter_ == 'power':
-		img_matrix = pi.filterContrastPow(img_matrix)
-
 	elif filter_ == 'histogram':
 		img_matrix = pi.filterHistogram(img_matrix)
 

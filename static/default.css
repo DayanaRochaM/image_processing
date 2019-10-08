@@ -753,6 +753,10 @@
 	form > input{
 		border-radius: 5px;
 	}
+	form > label{
+		font: 400 13.3333px Arial;
+		margin-right: 35px;
+	}
 
 	#submit{
 		margin-left: 20px;
@@ -761,4 +765,9 @@
 	.two_points_text{
 		text-align: center;
 		background-color: #fff;
+	}
+
+	#colorful{
+		width: 15px; 
+        height: 15px; 
 	}

@@ -14,7 +14,8 @@ def transformImage(filename):
 
 # Leitura simples para arquivo que nao precisa de pre-processamento
 def readImage(filename):
-    return imread(filename)
+    image_file = Image.open(filename)
+    return np.asarray(image_file, dtype='uint8')
 
 # Mostrar imagem
 def showImage(matrix_image):
@@ -24,6 +25,10 @@ def showImage(matrix_image):
 def saveImage(path, matrix):
     imageio.imwrite(path, matrix) 
     
+#Salvar imagem colorida
+def saveImageColorful(path, matrix):
+    mpl.imsave(path, matrix.astype(np.uint8))   
+     
 '''  FILTROS '''
 
 # Filtro negativo
@@ -650,12 +655,12 @@ def matlab_style_gauss2D(shape=(3,3),sigma=1.4):
 ''' OPERACOES COM MATRIZES '''
 
 # Função que retorna apenas uma dos três canais de uma matriz referente a uma imagem RGB cinza 
-def getOneChannelFromRGBMatrix(img_matrix):
+def getOneChannelFromRGBMatrix(img_matrix, column=0):
     matrix = []
     for line in img_matrix:
         columns = []
         for values in line:
-            columns.append(values[0])
+            columns.append(values[column])
         matrix.append(columns)
     return matrix
 
