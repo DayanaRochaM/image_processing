@@ -138,7 +138,7 @@ def apply_filter():
 					new_args = utils.saveArgs(filter_,  request_form, args, complete_filename)
 					args = new_args.copy()
 				
-				img_matrix = utils.applyFilter(filter_, img_matrix, args)
+				img_matrix = utils.applyFilter(filter_, img_matrix, args, is_img_colorful)
 				print(filter_)
 
 			# Nome do arquivo
@@ -147,8 +147,14 @@ def apply_filter():
 			complete_path = path_actual + file_
 
 			# Salvando arquivo
-			if not is_img_colorful:
-				pi.saveImage(complete_path, img_matrix) 
+			if filter_ == 'encode_msg':
+				print(img_matrix)
+				print(type(img_matrix))
+				img_matrix.save(complete_path)
+
+			elif not is_img_colorful:
+				pi.saveImage(complete_path, img_matrix)
+
 			else:
 				pi.saveImageColorful(complete_path, img_matrix)
 			#f.save('static/images/original/' + secure_filename(f.content_type).replace('_','.'))

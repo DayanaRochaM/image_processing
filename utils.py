@@ -15,7 +15,7 @@ def cleaningFolder(directory):
 		remove(directory + file)
 
 # Aplicar filtro
-def applyFilter(filter_, img_matrix, args):
+def applyFilter(filter_, img_matrix, args, is_img_colorful):
 
 	if filter_ == 'negative':
 		img_matrix = pi.filterNegative(img_matrix)
@@ -27,65 +27,65 @@ def applyFilter(filter_, img_matrix, args):
 		img_matrix = pi.filterContrastPow(img_matrix)
 
 	elif filter_ == 'histogram':
-		img_matrix = pi.filterHistogram(img_matrix)
+		img_matrix = pi.filterHistogram(img_matrix, is_img_colorful)
 
 	elif filter_ == 'convolution':
 		# Aqui o extra é uma matriz que é um filtro
-		img_matrix = pi.filterConvolution(img_matrix, args['convolution'])
+		img_matrix = pi.filterConvolution(img_matrix, args['convolution'], is_img_colorful)
 
 	elif filter_ == 'mean':
 		# Aqui o extra é um n, que é a dimensão da máscara da matriz
-		img_matrix = pi.filterMean(img_matrix, args['mean'])
+		img_matrix = pi.filterMean(img_matrix, args['mean'], is_img_colorful)
 
 	elif filter_ == 'median':
 		# Aqui o extra é um n, que é a dimensão da máscara da matriz
-		img_matrix = pi.filterMedian(img_matrix, args['median'])
+		img_matrix = pi.filterMedian(img_matrix, args['median'], is_img_colorful)
 
 	elif filter_ == 'laplacian':
-		img_matrix = pi.filterLaplacian(img_matrix, args['laplacian']['n'], args['laplacian']['sigma'])
+		img_matrix = pi.filterLaplacian(img_matrix, args['laplacian']['n'], args['laplacian']['sigma'], is_img_colorful)
 
 	elif filter_ == 'gaussian':
-		img_matrix = pi.filterGaussian(img_matrix, args['gaussian']['n'], args['gaussian']['sigma'])
+		img_matrix = pi.filterGaussian(img_matrix, args['gaussian']['n'], args['gaussian']['sigma'], is_img_colorful)
 
 	elif filter_ == 'highboost':
-		img_matrix = pi.filterHighboost(img_matrix, args['highboost'])
+		img_matrix = pi.filterHighboost(img_matrix, args['highboost'], is_img_colorful)
 
 	elif filter_ == 'sobel':
-		img_matrix = pi.filterSobel(img_matrix)
+		img_matrix = pi.filterSobel(img_matrix, is_img_colorful)
 
 	elif filter_ == 'two_points':
 		print(args['two_points']['point1'])
 		print(args['two_points']['point2'])
-		img_matrix = pi.filterTwoPointsChart(img_matrix, args['two_points']['point1'], args['two_points']['point2'])
+		img_matrix = pi.filterTwoPointsChart(img_matrix, args['two_points']['point1'], args['two_points']['point2'], is_img_colorful)
 
 	elif filter_ == 'limit':
-		img_matrix = pi.filterLimit(img_matrix, args['limit']['limit'])
+		img_matrix = pi.filterLimit(img_matrix, args['limit']['limit'], is_img_colorful)
 
 	elif filter_ == 'geometric_mean':
-		img_matrix = pi.filterGeometricMean(img_matrix, args['geometric_mean'])
+		img_matrix = pi.filterGeometricMean(img_matrix, args['geometric_mean'], is_img_colorful)
 
 	elif filter_ == 'harmonic_mean':
-		img_matrix = pi.filterHarmonicMean(img_matrix, args['harmonic_mean'])
+		img_matrix = pi.filterHarmonicMean(img_matrix, args['harmonic_mean'], is_img_colorful)
 
 	elif filter_ == 'contraharmonic_mean':
-		img_matrix = pi.filterContraHarmonicMean(img_matrix, args['contraharmonic_mean'])
+		img_matrix = pi.filterContraHarmonicMean(img_matrix, args['contraharmonic_mean'], is_img_colorful)
 
 	elif filter_ == 'gradient':
-		img_matrix = pi.filterGradient(img_matrix)
+		img_matrix = pi.filterGradient(img_matrix, is_img_colorful)
 
 	elif filter_ == 'encode_msg':
-		img = Image.open(filename) # Abrir imagem colorida
+		img = Image.open(filename).convert('RGB') # Abrir imagem colorida
 		img_matrix = pi.filterEncodeMsg(img, args['encode_msg']['msg'])
 
 	return img_matrix
 
 # Aplicar sequencia de filtros
-def removeFilter(filter_, img_matrix, filters_in_use, args):
-	filter_ = filter_[4:]
-	for name in filters_in_use:
-		img_matrix = applyFilter(name, img_matrix,args)
+# def removeFilter(filter_, img_matrix, filters_in_use, args):
+# 	filter_ = filter_[4:]
+# 	for name in filters_in_use:
+# 		img_matrix = applyFilter(name, img_matrix,args)
 
-	return img_matrix
+# 	return img_matrix
 
 # Checando se matriz é quadrada
 def checkMatrixIsSquare(matrix):
