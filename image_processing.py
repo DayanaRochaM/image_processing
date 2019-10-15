@@ -1223,6 +1223,25 @@ def HSVtoRGB(img_matrix):
             s = new_m[i][j][1]
             v = new_m[i][j][2]
             r,g,b = calculateRGB(h,s,v)
+
+            if (r > 1.0):
+                r = 1
+                
+            elif (r < 0.0):
+                r = 0
+            
+            if (g > 1.0):
+                g = 1
+                
+            elif (g < 0.0):
+                g = 0
+            
+            if (b > 1.0):
+                b = 1
+                
+            elif (b < 0.0):
+                b = 0
+                
             #r = r * 255
             #g = g * 255
             #b = b * 255

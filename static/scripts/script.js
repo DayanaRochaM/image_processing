@@ -210,6 +210,10 @@ $(function() { //shorthand document.ready function
             formFilter.append('point1', tuple1);
             formFilter.append('point2', tuple2);
         }
+        else if (id=='HSV_ajust'){
+            formFilter.append('channel', $('#hsv-channel').val());
+            formFilter.append('percent', $('#hsv-percent').val());
+        }
         else {
             formFilter.append('text', $("#".concat(id,"-text")).val());
         }

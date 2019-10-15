@@ -17,6 +17,7 @@ def cleaningFolder(directory):
 # Aplicar filtro
 def applyFilter(filter_, img_matrix, args, is_img_colorful):
 
+	print(filter_)
 	if filter_ == 'negative':
 		img_matrix = pi.filterNegative(img_matrix)
 
@@ -76,6 +77,15 @@ def applyFilter(filter_, img_matrix, args, is_img_colorful):
 	elif filter_ == 'encode_msg':
 		img = Image.open(filename).convert('RGB') # Abrir imagem colorida
 		img_matrix = pi.filterEncodeMsg(img, args['encode_msg']['msg'])
+
+	elif filter_ == 'HSV_ajust':
+		print('entrou')
+		img_matrix = pi.RGBtoHSV(img_matrix)
+		print('passou do RGB TO HSV')
+		img_matrix = pi.applyPercentChannelHSV(img_matrix,  args['HSV_ajust']['channel'], args['HSV_ajust']['percent'])
+		print('passou do apply percent')
+		img_matrix = pi.HSVtoRGB(img_matrix)
+		print('passou do HSV to rgb')
 
 	return img_matrix
 
@@ -224,5 +234,12 @@ def saveArgs(filter_, request, args, complete_filename):
 		args['encode_msg'] = {'msg':msg}
 		global filename
 		filename = complete_filename
+
+	elif (filter_ == 'HSV_ajust'):
+		channel = int(request['channel'])
+		percent = float(request['percent']) * 0.1
+		print(channel)
+		print(percent)
+		args['HSV_ajust'] = {'channel':channel, 'percent':percent}
 
 	return args
