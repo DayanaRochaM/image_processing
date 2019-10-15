@@ -139,6 +139,12 @@ $(function() { //shorthand document.ready function
                 $('.non-filter').attr('disabled', true);
                 $('#calc-histogram').attr('disabled', false);
 
+                if (colorful=='True'){
+                    $('#hsv-hist-channel').attr('disabled', false);
+                }else{
+                    $('#hsv-hist-channel').attr('disabled', true);
+                }
+
                 // Configurando gráfico
                 graph_width = graph.width; 
                 graph_height = graph.height;
@@ -268,14 +274,17 @@ $(function() { //shorthand document.ready function
 
     // Para calcular e exibir histograma da imagem
     $("#calc-histogram").click(function() {
-        // var formFilter = new FormData();
+        var formFilter = new FormData();
         // var id = this.id;
         // formFilter.append('filter', id); 
+        if (colorful=='True'){
+            formFilter.append('channel', $('#hsv-hist-channel').val());
+        }
 
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/show_histogram",
-            //data: formFilter,
+            data: formFilter,
             processData: false,
                 contentType: false,
             success: function() {

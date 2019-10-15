@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import copy
+import cv2
 from imread import imread
 from matplotlib import pyplot as mpl
 from PIL import Image 
@@ -1241,7 +1242,7 @@ def HSVtoRGB(img_matrix):
                 
             elif (b < 0.0):
                 b = 0
-                
+
             #r = r * 255
             #g = g * 255
             #b = b * 255
@@ -1342,3 +1343,92 @@ def calculateVHistogram(img):
     counts, labels = np.histogram(vals, range(257))
     
     return counts, labels
+
+
+''' Equalizar histogramas '''
+
+def equalizeHistogram(filename):
+
+    img = cv2.imread(filename)
+    img_to_yuv = cv2.cvtColor(img,cv2.COLOR_BGR2YUV)
+    img_to_yuv[:,:,0] = cv2.equalizeHist(img_to_yuv[:,:,0])
+    hist_equalization_result = cv2.cvtColor(img_to_yuv, cv2.COLOR_YUV2BGR)
+    return hist_equalization_result
+
+''' ALGORITMOS DE ESCALA DE CINZA '''
+
+def grayScaleMean(img):
+    
+    new_m = img.copy()
+    
+    rows = len(img)
+    cols = len(img[0])
+    
+    for i in range(rows):
+        for j in range(cols):
+            
+            new_value = (img[i][j][0] + img[i][j][1] + img[i][j][2])/3
+            new_m[i][j][0] = new_value
+            new_m[i][j][1] = new_value
+            new_m[i][j][2] = new_value
+            
+    return np.asarray(new_m, dtype ='uint8')
+
+def grayScaleMeanWeigh(img):
+    
+    new_m = img.copy()
+    
+    rows = len(img)
+    cols = len(img[0])
+    
+    for i in range(rows):
+        for j in range(cols):
+            
+            new_value = img[i][j][0] * 0.3 + img[i][j][1] * 0.59 + img[i][j][2] * 0.11
+            new_m[i][j][0] = new_value
+            new_m[i][j][1] = new_value
+            new_m[i][j][2] = new_value
+            
+    return np.asarray(new_m, dtype ='uint8')
+
+''' SEPIA '''
+def sepia(img):
+    
+    new_m = img.copy()
+    
+    rows = len(img)
+    cols = len(img[0])
+    
+    for i in range(rows):
+        for j in range(cols):
+            
+            r = img[i][j][0] 
+            g = img[i][j][1]
+            b = img[i][j][2]
+            
+            tr = int(0.393 * r + 0.769 * g + 0.189 * b)
+            tg = int(0.349 * r + 0.686 * g + 0.168 * b)
+            tb = int(0.272 * r + 0.534 * g + 0.131 * b)
+            
+            if tr > 255:
+                r = 255 
+            else: 
+                r = tr
+                
+            if tg > 255: 
+                g = 255 
+            
+            else: 
+                g = tg
+                
+            if tb > 255:
+                b = 255 
+                
+            else: 
+                b = tb
+            
+            new_m[i][j][0] = r
+            new_m[i][j][1] = g
+            new_m[i][j][2] = b
+            
+    return np.asarray(new_m, dtype ='uint8')

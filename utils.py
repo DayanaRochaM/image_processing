@@ -79,13 +79,21 @@ def applyFilter(filter_, img_matrix, args, is_img_colorful):
 		img_matrix = pi.filterEncodeMsg(img, args['encode_msg']['msg'])
 
 	elif filter_ == 'HSV_ajust':
-		print('entrou')
 		img_matrix = pi.RGBtoHSV(img_matrix)
-		print('passou do RGB TO HSV')
 		img_matrix = pi.applyPercentChannelHSV(img_matrix,  args['HSV_ajust']['channel'], args['HSV_ajust']['percent'])
-		print('passou do apply percent')
 		img_matrix = pi.HSVtoRGB(img_matrix)
-		print('passou do HSV to rgb')
+
+	elif filter_ == 'equalize_histogram':
+		img_matrix = pi.equalizeHistogram(filename)
+
+	elif filter_ == 'gray_scale_mean':
+		img_matrix = pi.grayScaleMean(img_matrix)
+
+	elif filter_ == 'gray_scale_mean_weigh':
+		img_matrix = pi.grayScaleMeanWeigh(img_matrix)
+
+	elif filter_ == 'sepia':
+		img_matrix = pi.sepia(img_matrix)
 
 	return img_matrix
 
@@ -121,6 +129,7 @@ def checkMatrixIsSquare(matrix):
 # Tratamento para salvar argumentos
 def saveArgs(filter_, request, args, complete_filename):
 
+	global filename
 	if(filter_ == "convolution"): 
 
 		# Checando se texto pode ser transformado em matriz 
@@ -232,7 +241,6 @@ def saveArgs(filter_, request, args, complete_filename):
  			return json.dumps({'success':False}), 500
 
 		args['encode_msg'] = {'msg':msg}
-		global filename
 		filename = complete_filename
 
 	elif (filter_ == 'HSV_ajust'):
@@ -241,5 +249,8 @@ def saveArgs(filter_, request, args, complete_filename):
 		print(channel)
 		print(percent)
 		args['HSV_ajust'] = {'channel':channel, 'percent':percent}
+
+	elif (filter_ == 'equalize_histogram'):
+		filename = complete_filename
 
 	return args

@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, jsonify, make_response
 from os import listdir, remove
+import cv2
 from os.path import isfile, join
 from matplotlib import pyplot as mpl
 from itertools import chain
@@ -29,8 +30,8 @@ path_actual = path_ + "actual/"
 path_histogram_img = path_ +  "histogram/"
 file_histogram_img = "hist-image.png"
 
-filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit","geometric_mean","harmonic_mean","contraharmonic_mean","encode_msg","HSV_ajust"]
-filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit","geometric_mean","harmonic_mean","contraharmonic_mean","gradient","encode_msg","HSV_ajust"]
+filters_with_args=["convolution", "mean", "median", "laplacian", "gaussian", "highboost", "two_points", "limit","geometric_mean","harmonic_mean","contraharmonic_mean","encode_msg","HSV_ajust","equalize_histogram"]
+filters_list = ["negative", "log", "power", "histogram", "convolution", "mean", "median", "laplacian", "gaussian", "highboost", "sobel", "two_points","limit","geometric_mean","harmonic_mean","contraharmonic_mean","gradient","encode_msg","HSV_ajust","equalize_histogram","gray_scale_mean","gray_scale_mean_weigh", "sepia"]
 non_filters_list = ["non-negative", "non-log", "non-power", "non-histogram", "non-convolution", "non-mean", "non-median", "non-laplacian", "non-gaussian", "non-highboost",  "non-sobel", "non-two_points","non-limit","non-geometric_mean","non-harmonic_mean","non-contraharmonic_mean"]
 
 global args 
@@ -150,9 +151,10 @@ def apply_filter():
 
 			# Salvando arquivo
 			if filter_ == 'encode_msg':
-				print(img_matrix)
-				print(type(img_matrix))
 				img_matrix.save(complete_path)
+
+			elif filter_ == 'equalize_histogram':
+				cv2.imwrite(complete_path,img_matrix) 
 
 			elif not is_img_colorful:
 				pi.saveImage(complete_path, img_matrix)
@@ -195,7 +197,7 @@ def remove_filter():
 	return json.dumps({'success':False, 'error':{'type':500, 'message':'Requisição incorreta!'}}),500 
 
 # Endpoint para calcular o histograma da imagem
-@app.route('/show_histogram', methods=['GET'])
+@app.route('/show_histogram', methods=['POST'])
 def show_histogram():
 	
 	# Pegando nome do arquivo
@@ -206,8 +208,21 @@ def show_histogram():
 	complete_filename = path_actual + file_
 	img_matrix = pi.readImage(complete_filename)
 
-	# Calculando histograma
-	counts, labels = pi.calculateHistogram(img_matrix)
+	# Img
+	if is_img_colorful:
+
+		channel = int(request.form['channel'])
+
+		if 0 <= channel and channel <=2:
+			print(channel)
+			counts, labels = pi.calculateRGBHistogram(img_matrix, channel)
+
+		else:
+			counts, labels = pi.calculateVHistogram(img_matrix)
+
+	else:
+		# Calculando histograma
+		counts, labels = pi.calculateHistogram(img_matrix)
 
 	# Gerando histograma
 	mpl.bar(labels[:-1] - 0.5, counts, width=1, edgecolor='none')
