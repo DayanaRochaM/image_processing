@@ -21,14 +21,20 @@ def readImage(filename):
 def showImage(matrix_image):
     mpl.imshow(matrix_image)
     
-#Salvar imagem
+# Salvar imagem
 def saveImage(path, matrix):
     imageio.imwrite(path, matrix) 
     
-#Salvar imagem colorida
+# Salvar imagem colorida
 def saveImageColorful(path, matrix):
-    mpl.imsave(path, matrix.astype(np.uint8))   
+    mpl.imsave(path, matrix)
+    #mpl.imsave(path, matrix.astype(np.uint8))
      
+# Transformar matrix HSV em imagem
+def HSVmatrixToImage(img_matrix):
+    i = Image.fromarray(np.asarray(img_matrix ,dtype=np.uint8), 'HSV')
+    return i
+
 '''  FILTROS '''
 
 # Filtro negativo
@@ -339,7 +345,7 @@ def filterTwoPointsChart(img_matrix, point1, point2, is_colorful=False):
     else:
         
         one_channel = getOneChannelFromRGBMatrix(img_matrix)
-        one_channel = calculateChannelTwoPoints(one_channel, point1, point2, functions)
+        one_channel = calculateChannelTwoPoints(one_channel, functions)
         new_image = expandOneToThreeChannels(one_channel)
 
         return np.array(new_image).astype('uint8')
@@ -365,7 +371,7 @@ def filterLimit(img_matrix, limit, is_colorful=False):
         
         one_channel = getOneChannelFromRGBMatrix(img_matrix)
         one_channel = calculateChannelLimit(one_channel, limit)
-        new_m = expandOneToThreeChannels(one_channel)
+        new_m = expandOneToThreeChannels(new_m)
         return np.array(new_m).astype('uint8')
 
 # Filter Gradient borders
@@ -423,7 +429,7 @@ def filterEncodeMsg(img, msg):
                 asc = r
             encoded.putpixel((col, row), (asc, g , b))
             index += 1
-    print(type(encoded))
+
     return encoded
 
 # Filter geometric mean 
@@ -508,7 +514,7 @@ def filterContraHarmonicMean(img_matrix, n, is_colorful=False):
 # Funcao que retorna quantidade de ocorrencias por pixel e os pixels associados
 def calculateHistogram(img_matrix):
     # img = cv2.imread(filename)
-    
+        
     # Calcula a média do canais RGB e concatena em um array 1D
     vals = img_matrix.mean(axis=2).flatten()
     
@@ -1093,3 +1099,227 @@ def decodeMsg(img):
                 msg += chr(r)
             index += 1
     return msg
+
+''' CONVERSÃO ENTRE RGB E HSV '''
+
+def divideBy255(num):
+    return num/255
+
+def getMinAndMax(r_pixel,g_pixel,b_pixel):
+    return min(r_pixel,g_pixel,b_pixel), max(r_pixel,g_pixel,b_pixel)
+
+# H representa grau
+def calculatePixelH(r,g,b,min_,max_,max_char):
+
+    dif_ = max_ - min_
+    
+    if dif_ == 0:
+        return 0
+    
+    if max_char == 'r' and g >= b:
+        return 60 * (g-b) / dif_
+        #  np.double
+    
+    elif max_char == 'r' and g < b:
+        return 60 * (g-b) / dif_ + 360
+    
+    elif max_char == 'g':
+        return 60 * (b-r) / dif_ + 120
+    
+    elif max_char == 'b':
+        return 60 * (r-g) / dif_ + 240
+    
+    else:
+        return False
+
+def calculatePixelS(min_, max_):
+    return (max_ - min_) / max_
+
+def getMaxChar(r,g,b,max_):
+    if r == max_:
+        return 'r'
+    
+    elif g == max_:
+        return 'g'
+    
+    elif b == max_:
+        return 'b'
+    
+    return False
+
+def calculateRGB(h,s,v):
+    # Retorna os valores RGB, respectivamente
+    if s == 0:
+        return v,v,v
+    
+    else:
+        h_i = (h // 60) % 6
+        f = h/60 - h_i
+        p = v * (1 - s)
+        q = v * (1 - s * f)
+        t = v * (1 - (1 - f) * s)
+        
+        if h_i == 0:
+            return v,t,p
+        
+        elif h_i == 1:
+            return q,v,p
+        
+        elif h_i == 2:
+            return p,v,t
+        
+        elif h_i == 3:
+            return p,q,v
+        
+        elif h_i == 4:
+            return t,p,v
+        
+        elif h_i == 5:
+            return v,p,q
+
+def RGBtoHSV(img_matrix):
+    
+    # normalizar para valores entre 0 e 1 
+    max_ = img_matrix.max()
+    img_matrix = img_matrix/max_ 
+    
+    rows = len(img_matrix)
+    cols = len(img_matrix[0])
+    
+    # Copia da matriz sem ser uint8 por causa dos valores maiores que 255
+    new_m = np.zeros((rows, cols, 3))
+    
+    # Percorrendo matriz
+    for i in range(rows):
+        for j in range(cols):
+            
+            r = img_matrix[i][j][0]
+            g = img_matrix[i][j][1]
+            b = img_matrix[i][j][2]
+            
+            min_, max_ = getMinAndMax(r,g,b)
+            max_char = getMaxChar(r,g,b,max_)
+            
+            new_m[i][j][0] = calculatePixelH(r,g,b,min_,max_,max_char)
+            new_m[i][j][1] = calculatePixelS(min_, max_)
+            new_m[i][j][2] = max_
+    
+    return new_m
+
+
+def HSVtoRGB(img_matrix):
+    
+    # Copia da matriz
+    new_m = img_matrix.copy()
+
+    rows = len(img_matrix)
+    cols = len(img_matrix[0])
+    
+    # Percorrendo matriz
+    for i in range(rows):
+        for j in range(cols):
+            
+            h = new_m[i][j][0]
+            s = new_m[i][j][1]
+            v = new_m[i][j][2]
+            r,g,b = calculateRGB(h,s,v)
+            #r = r * 255
+            #g = g * 255
+            #b = b * 255
+            new_m[i][j][0] = r
+            new_m[i][j][1] = g 
+            new_m[i][j][2] = b
+    
+    return new_m
+
+''' AJUSTE DE MATIZ, SATURAÇÃO E BRILHO '''
+
+# Recebe um canal HSV e aplica um percentual
+def applyPercentChannelHSV(hsv, channel, percent):
+    
+     # Copia da matriz
+    new_m = hsv.copy()
+
+    rows = len(new_m)
+    cols = len(new_m[0])
+    
+    # Percorrendo matriz
+    for i in range(rows):
+        for j in range(cols):
+            
+            new_m[i][j][channel] = new_m[i][j][channel] * percent
+    
+    new_m = normalizateValue(new_m)
+    return new_m
+
+def normalizateValue(hsv):
+    
+    rows = len(hsv)
+    cols = len(hsv[0])
+    
+    for i in range(rows):
+        for j in range(cols):
+            
+            h = hsv[i][j][0]
+            s = hsv[i][j][1]
+            v = hsv[i][j][2]
+            
+            if h < 0:
+                hsv[i][j][0] = 0
+            elif h > 360:
+                hsv[i][j][0] = 360
+                
+            if s < 0:
+                hsv[i][j][1] = 0
+            elif s > 1:
+                hsv[i][j][1] = 1
+                
+            if v < 0:
+                hsv[i][j][2] = 0
+            elif v > 1:
+                hsv[i][j][2] = 1
+    
+    return hsv
+
+
+''' GERAR HISTOGRAMAS RGB '''
+
+def calculateRGBHistogram(img, channel):
+    # Canel unico
+    c = getOneChannelFromRGBMatrix(img, channel)
+    
+    rows = len(c)
+    lines = len(c[0])
+    
+    for i in range(rows):
+        for j in range(lines):
+            c[i][j] = [c[i][j]]
+    
+    c1 = np.array(c)
+    vals = c1.mean(axis=2).flatten()
+    counts, labels = np.histogram(vals, range(257))
+    
+    return counts, labels
+
+''' GERAR HISTOGRAMA V DE HSV '''
+
+def calculateVHistogram(img):
+    hsv = RGBtoHSV(img)
+    v = getOneChannelFromRGBMatrix(hsv, 2)
+    
+    vc = v.copy()
+    v = np.array(v)
+    
+    rows = len(v)
+    cols = len(v[0])
+    
+    for i in range(rows):
+        for j in range(cols):
+            v[i][j] = v[i][j] * 255
+            vc[i][j] = [v[i][j]]
+    
+    vc = np.array(vc)
+    vals = vc.mean(axis=2).flatten()
+    counts, labels = np.histogram(vals, range(257))
+    
+    return counts, labels
