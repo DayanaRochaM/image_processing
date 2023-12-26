@@ -24,7 +24,8 @@ def showImage(matrix_image):
     
 # Salvar imagem
 def saveImage(path, matrix):
-    imageio.imwrite(path, matrix) 
+    mpl.imsave(path, matrix)
+    #imageio.imwrite(path, matrix) 
     
 # Salvar imagem colorida
 def saveImageColorful(path, matrix):
@@ -346,7 +347,7 @@ def filterTwoPointsChart(img_matrix, point1, point2, is_colorful=False):
     else:
         
         one_channel = getOneChannelFromRGBMatrix(img_matrix)
-        one_channel = calculateChannelTwoPoints(one_channel, functions)
+        one_channel = calculateChannelTwoPoints(one_channel, (0,0), (0,0), functions)
         new_image = expandOneToThreeChannels(one_channel)
 
         return np.array(new_image).astype('uint8')
@@ -372,7 +373,7 @@ def filterLimit(img_matrix, limit, is_colorful=False):
         
         one_channel = getOneChannelFromRGBMatrix(img_matrix)
         one_channel = calculateChannelLimit(one_channel, limit)
-        new_m = expandOneToThreeChannels(new_m)
+        new_m = expandOneToThreeChannels(one_channel)
         return np.array(new_m).astype('uint8')
 
 # Filter Gradient borders
@@ -423,8 +424,8 @@ def filterEncodeMsg(img, msg):
             # first value is length of msg
             if row == 0 and col == 0 and index < length:
                 asc = length
-            elif index <= length:
-                c = msg[index -1]
+            elif index <= length and index>0:
+                c =msg[index -1]
                 asc = ord(c)
             else:
                 asc = r
@@ -832,6 +833,8 @@ def calculateChannelTwoPoints(one_channel, point1, point2, functions):
     
     rows = len(one_channel)
     cols = len(one_channel[0])
+
+    print(functions)
     
     # Percorrendo matriz
     for i in range(rows):
@@ -938,7 +941,7 @@ def calculateChannelGeometricMean(img_matrix, n):
     
     for i in range(lin):
         for j in range(col):
-            prod_ = np.float(1)
+            prod_ = float(1)
             
             for key, value in f_operations.items():
                 try:
