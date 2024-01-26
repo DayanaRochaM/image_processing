@@ -5,8 +5,11 @@ This application has a simple interface but utilizes complex mathematical calcul
 ### Requirements
 [![Python](https://img.shields.io/badge/Python_3-blue.svg)](https://www.python.org/downloads/release)
 
-### Installation
+### Installing
 1. Install the dependencies using Python3: 
-`TO DO` 
+`TO DO`
+
+### Getting started
+`TO DO`
 <br/><br/>
 #### [See More](https://dayanarochadeveloper.wordpress.com/portfolio).
