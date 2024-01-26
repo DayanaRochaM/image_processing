@@ -7,7 +7,6 @@ This application has a simple interface but utilizes complex mathematical calcul
 
 ### Installation
 1. Install the dependencies using Python3: 
-`TO DO`
-
+`TO DO` 
 <br/><br/>
-### See more.
+#### [See More](https://dayanarochadeveloper.wordpress.com/portfolio).
