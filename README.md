@@ -7,9 +7,13 @@ This application has a simple interface but utilizes complex mathematical calcul
 
 ### Installing
 1. Install the dependencies using Python3: 
-`TO DO`
+```
+pip install -r requirements.txt
+```
 
 ### Getting started
-`TO DO`
+```
+python3 -m flask --app Server run
+```
 <br/><br/>
 #### [See More](https://dayanarochadeveloper.wordpress.com/portfolio).
