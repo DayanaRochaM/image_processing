@@ -3,7 +3,7 @@ This application has a simple interface but utilizes complex mathematical calcul
 
 ## HOW TO START
 ### Requirements
-[![Python](https://img.shields.io/badge/Python_3-blue.svg)](https://www.python.org/downloads/release)
+[![Python](https://img.shields.io/badge/Python_3-blue.svg)](https://www.python.org/downloads)
 
 ### Installing
 1. Install the dependencies using Python3: 
