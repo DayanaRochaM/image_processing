@@ -8,7 +8,7 @@ This application has a simple interface but utilizes complex mathematical calcul
 ### Installing
 1. Install the dependencies using Python3: 
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ### Getting started
