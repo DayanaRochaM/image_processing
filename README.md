@@ -16,4 +16,4 @@ pip3 install -r requirements.txt
 python3 -m flask --app Server run
 ```
 <br/><br/>
-#### [See More](https://dayanarochadeveloper.wordpress.com/portfolio).
+#### [See More](https://dayanarochadeveloper.wordpress.com/portfolio/#image-processing).
