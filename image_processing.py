@@ -2,7 +2,6 @@ import numpy as np
 import math
 import copy
 import cv2
-from imread import imread
 from matplotlib import pyplot as mpl
 from PIL import Image 
 import imageio
